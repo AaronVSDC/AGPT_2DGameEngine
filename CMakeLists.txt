@@ -7,10 +7,10 @@ endif()
 
 
 
-
+ 
 project(2DGameEngine LANGUAGES CXX)  
 
-include(FetchContent)
+include(FetchContent) 
 
 # ----------------------------------------------------------------------------------
 # BOX2D
@@ -72,10 +72,9 @@ target_link_libraries(2DGameEngine PRIVATE
 #Copy SDL3.dll next to the executable after build
 add_custom_command(TARGET 2DGameEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    $<TARGET_FILE:SDL3::SDL3>
-    $<TARGET_FILE_DIR:2DGameEngine>)
-
-
-    if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET 2DGameEngine PROPERTY CXX_STANDARD 20)
-endif()
+        $<TARGET_FILE:SDL3::SDL3>
+        $<TARGET_FILE_DIR:2DGameEngine>
+)
+    if (CMAKE_VERSION VERSION_GREATER 3.12) 
+  set_property(TARGET 2DGameEngine PROPERTY CXX_STANDARD 20)  
+endif()   

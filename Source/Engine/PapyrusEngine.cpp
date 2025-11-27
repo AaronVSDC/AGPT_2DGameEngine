@@ -1,44 +1,71 @@
 #include "PapyrusEngine.h"
+#include "Renderer.h"
+#include "InputManager.h"
+#include "SceneManager.h"
 #include "Window.h"
+#include "PhysicsManager.h" 
+#include <thread>
 
 namespace Papyrus
 {
 	PapyrusEngine::PapyrusEngine()
 	{
-	}
-	PapyrusEngine::~PapyrusEngine()
-	{
-	}
-
-	void PapyrusEngine::run()
-	{
-
 		GWindow = std::make_unique<Window>(
 			"Papyrus Engine",
 			1280,
 			720
 		);
-
-		SDL_Renderer* renderer = GWindow->getRenderer();
-
-		bool running = true;
-		SDL_Event e{};
-
-		while (running)
-		{
-			while (SDL_PollEvent(&e))
-			{
-				if (e.type == SDL_EVENT_QUIT)
-					running = false;
-			}
-
-			SDL_SetRenderDrawColor(renderer, 20, 20, 20, 255);
-			SDL_RenderClear(renderer);
-
-			SDL_RenderPresent(renderer);
-		}
-
+	}
+	PapyrusEngine::~PapyrusEngine()
+	{
 		GWindow.reset();
+	}
+
+	void PapyrusEngine::run()
+	{
+
+		load();
+
+		constexpr int desiredFPS{ 60 };
+		constexpr int frameTimeMs{ 1000 / desiredFPS };
+
+		auto& renderer = Renderer::getInstance();
+		auto& sceneManager = SceneManager::getInstance();
+		auto& input = InputManager::getInstance();
+		auto& physicsManager = PhysicsManager::getInstance();
+
+		const float fixedTimeStep{ 0.02f };
+
+		bool doContinue = true;
+		auto lastTime = std::chrono::high_resolution_clock::now();
+		float lag = 0.0f;
+
+		sceneManager.onEnable();
+		sceneManager.start();
+		while (doContinue)
+		{
+			const auto currentTime = std::chrono::high_resolution_clock::now();
+			const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
+			lastTime = currentTime;
+			lag += deltaTime;
+
+			doContinue = input.processInput();
+
+			while (lag >= fixedTimeStep)
+			{
+				sceneManager.fixedUpdate(fixedTimeStep);
+				physicsManager.fixedUpdate(fixedTimeStep);
+				lag -= fixedTimeStep;
+			}
+			sceneManager.update(deltaTime);
+			renderer.render();
+
+			const auto sleepTime = currentTime + std::chrono::milliseconds(frameTimeMs) - std::chrono::high_resolution_clock::now();
+			std::this_thread::sleep_for(sleepTime);
+		}
+		sceneManager.onDisable();
+
+
 	}
 
 	void PapyrusEngine::load()

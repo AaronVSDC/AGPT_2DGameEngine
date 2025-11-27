@@ -17,13 +17,11 @@ namespace Papyrus
 		~Window();
 		SDL_Window* getHandle() const { return m_SDLWindow; }
 
-		SDL_Renderer* getRenderer() const { return m_Renderer;  }
 		const int getHeight() const { return m_HEIGHT; }
 		const int getWidht() const { return m_WIDTH; }
 
 	private:
 		SDL_Window* m_SDLWindow = { nullptr };  
-		SDL_Renderer* m_Renderer = nullptr; 
 
 		const int m_WIDTH = 800;
 		const int m_HEIGHT = 600;

@@ -1,13 +1,11 @@
-﻿// 2DGameEngine.cpp : Defines the entry point for the application.
-//
-
-#include "main.h"
-#include "box2d\box2d.h"
-
-using namespace std;
+﻿#include "main.h"
+#include "PapyrusEngine.h"
 
 int main()
 {
-	cout << "Hello CMake." << endl;
+	Papyrus::PapyrusEngine engine{}; 
+
+	engine.run();
+
 	return 0;
 }
