@@ -14,6 +14,7 @@ namespace Papyrus
         SDL_Color     m_ClearColor{};
          
     public:
+        Renderer(); 
         void init();
         void render() const;
         void destroy();

@@ -9,7 +9,10 @@
 
 namespace Papyrus
 {
- 
+    Renderer::Renderer()
+    {
+        init(); 
+    }
     void Renderer::init()
     {
         m_Renderer = SDL_CreateRenderer(

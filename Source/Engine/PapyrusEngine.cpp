@@ -78,6 +78,8 @@ namespace Papyrus
 		ship->addComponent(std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")); 
 		
 
+		mainLevel->add(std::move(ship)); 
+
 
 	}
 
