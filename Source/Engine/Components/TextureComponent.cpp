@@ -1,0 +1,25 @@
+#include "TextureComponent.h"
+
+#include "GameObject.h"
+#include "Renderer.h"
+#include "ResourceManager.h"
+
+namespace Papyrus
+{
+	TextureComponent::TextureComponent(const std::string& fileName)
+		:m_FileName(fileName) 
+	{
+		m_pTexture = ResourceManager::getInstance().loadTexture(m_FileName); 
+	}
+
+	void TextureComponent::render() const
+	{
+		auto pos = getOwner()->m_Transform.position; 
+		Renderer::getInstance().renderTexture(*m_pTexture, pos.x, pos.y);
+	}
+
+	b2Vec2 TextureComponent::getSize() const
+	{
+		return m_pTexture->getSize();
+	}
+}

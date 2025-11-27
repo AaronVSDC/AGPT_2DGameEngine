@@ -5,6 +5,7 @@
 #include "Window.h"
 #include "PhysicsManager.h" 
 #include <thread>
+#include "TextureComponent.h"
 
 namespace Papyrus
 {
@@ -70,6 +71,14 @@ namespace Papyrus
 
 	void PapyrusEngine::load()
 	{
+		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
+
+		auto ship = std::make_unique<GameObject>();
+
+		ship->addComponent(std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")); 
+		
+
+
 	}
 
 }
