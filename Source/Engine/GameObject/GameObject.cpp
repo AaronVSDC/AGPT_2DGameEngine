@@ -85,6 +85,30 @@ namespace Papyrus
 		}
 		m_IsActive = active;
 	}
+	  
+	void GameObject::notifyTriggerEnter(GameObject* otherGameObject)
+	{
+		for (auto& component : m_Components)
+			if (component->m_Enabled) component->onTriggerEnter(otherGameObject);
+	}
+
+	void GameObject::notifyTriggerExit(GameObject* otherGameObject)
+	{
+		for (auto& component : m_Components)
+			if (component->m_Enabled) component->onTriggerExit(otherGameObject);
+	}
+
+	void GameObject::notifyCollisionEnter(GameObject* otherGameObject)
+	{
+		for (auto& component : m_Components)
+			if (component->m_Enabled) component->onCollisionEnter(otherGameObject);
+	}
+
+	void GameObject::notifyCollisionExit(GameObject* otherGameObject)
+	{
+		for (auto& component : m_Components)
+			if (component->m_Enabled) component->onCollisionExit(otherGameObject);
+	}
 
 	void GameObject::markForRemoval()
 	{

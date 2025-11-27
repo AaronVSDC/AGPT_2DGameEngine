@@ -1,53 +1,49 @@
 #include "BoxColliderComponent.h"
 #include "GameObject.h"
 #include "TextureComponent.h"
-#include "RigidBodyComponent.h"
+#include "PhysicsBodyComponent.h"
 #include "PhysicsManager.h"
 
 namespace Papyrus
 {
     BoxColliderComponent::~BoxColliderComponent()
     {
-        if (b2Shape_IsValid(m_Shape))
+        if (b2Shape_IsValid(m_shapeId))
         {
-            b2DestroyShape(m_Shape,false);
-            m_Shape = {};
+            b2DestroyShape(m_shapeId, true); 
+            m_shapeId = {};
         }
     }
 
     void BoxColliderComponent::start()
     {
-        auto* gameObject = getOwner();
-        auto* texture = gameObject->getComponent<TextureComponent>();
-        if (!texture) return; 
+        GameObject* owner = getOwner();
 
-        const b2Vec2 sizePx = texture->getSize();
-        m_WidthPixel = sizePx.x;
-        m_HeightPixel = sizePx.y;
+        auto* textureComponent = owner->getComponent<TextureComponent>();
+        auto* physicsBodyComponent = owner->getComponent<PhysicsBodyComponent>();
+        if (!textureComponent || !physicsBodyComponent)
+            return;
 
-        // Ensure a rigidbody exists. If you didn't add one, make it static.
-        auto* rb = gameObject->getComponent<RigidBodyComponent>();
-        if (!rb)
-        {
-            gameObject->addComponent(std::make_unique<RigidBodyComponent>(BodyType::Static));
-            rb = gameObject->getComponent<RigidBodyComponent>();
-            rb->start();
-        }
+        const b2Vec2 sizePx = textureComponent->getSize();
+        m_widthPixels = sizePx.x;
+        m_heightPixels = sizePx.y;
 
-        auto& pm = PhysicsManager::getInstance();
+        PhysicsManager& physicsManager = PhysicsManager::getInstance();
 
-        const float halfXMeter = pm.pixelToMeter(m_WidthPixel * 0.5f);
-        const float halfYMeter = pm.pixelToMeter(m_HeightPixel * 0.5f);
+        const float halfWidthMeters = physicsManager.pixelsToMeters(m_widthPixels * 0.5f);
+        const float halfHeightMeters = physicsManager.pixelsToMeters(m_heightPixels * 0.5f);
 
-        b2ShapeDef sd = b2DefaultShapeDef();
-        sd.isSensor = m_IsTrigger;
-        sd.density = m_Density;
-        sd.friction = m_Friction;
-        sd.restitution = m_Restitution;
+        b2Polygon boxPolygon = b2MakeBox(halfWidthMeters, halfHeightMeters);
 
-        b2Polygon box = b2MakeBox(halfXMeter, halfYMeter);
-        m_Shape = b2CreatePolygonShape(rb->bodyId(), &sd, &box);
+        b2ShapeDef shapeDefinition = b2DefaultShapeDef();
+        shapeDefinition.isSensor = true;                // overlap only
+        shapeDefinition.enableSensorEvents = true;      // REQUIRED
+        shapeDefinition.userData = owner;               // map events to GameObject
 
-        rb->setPositionPixels(gameObject->m_Transform.position.x, gameObject->m_Transform.position.y);
+        m_shapeId = b2CreatePolygonShape(
+            physicsBodyComponent->getBodyId(),
+            &shapeDefinition,
+            &boxPolygon
+        );
     }
 }

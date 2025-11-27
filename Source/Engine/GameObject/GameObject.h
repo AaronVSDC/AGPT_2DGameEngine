@@ -29,6 +29,10 @@ namespace Papyrus
 		void onDisable();
 		void setActive(bool active);
 
+		void notifyTriggerEnter(GameObject* otherGameObject);
+		void notifyTriggerExit(GameObject* otherGameObject); 
+		void notifyCollisionEnter(GameObject* otherGameObject);
+		void notifyCollisionExit(GameObject* otherGameObject);
 
 		Transform getTransform() const { return m_Transform; }
 		bool getIsActive() const { return m_IsActive; }

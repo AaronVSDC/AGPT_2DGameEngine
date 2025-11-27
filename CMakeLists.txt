@@ -72,14 +72,14 @@ target_link_libraries(2DGameEngine PRIVATE
 #Copy SDL3.dll next to the executable after build
 add_custom_command(TARGET 2DGameEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:SDL3::SDL3>
-        $<TARGET_FILE_DIR:2DGameEngine>
-)
+        $<TARGET_FILE:SDL3::SDL3> 
+        $<TARGET_FILE_DIR:2DGameEngine> 
+) 
 
 #same with resource folder
 set(RESOURCE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
 set(RESOURCE_BINARY_DIR "$<TARGET_FILE_DIR:2DGameEngine>/Resources")
-
+ 
 add_custom_command(TARGET 2DGameEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}" 
     COMMAND ${CMAKE_COMMAND} -E copy_directory

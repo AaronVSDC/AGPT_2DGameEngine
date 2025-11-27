@@ -21,7 +21,12 @@ namespace Papyrus
 		virtual void render() const {}
 		virtual void start() {}
 		virtual void onEnable() {}
-		virtual void onDisable() {}
+		virtual void onDisable() {} 
+
+		virtual void onTriggerEnter(GameObject* otherGameObject) {}
+		virtual void onTriggerExit(GameObject* otherGameObject) {}
+		virtual void onCollisionEnter(GameObject* otherGameObject) {}
+		virtual void onCollisionExit(GameObject* otherGameObject) {}
 
 		virtual GameObject* getOwner() const { return m_pOwner; }
 		void setOwner(GameObject* owner)

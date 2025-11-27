@@ -6,6 +6,7 @@
 #include "PhysicsManager.h" 
 #include <thread>
 #include "TextureComponent.h"
+#include "KeyboardMoveCommand.h"
 
 namespace Papyrus
 {
@@ -73,12 +74,25 @@ namespace Papyrus
 	{
 		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
 
-		auto ship = std::make_unique<GameObject>();
+		auto& input = Papyrus::InputManager::getInstance(); 
+		auto playerShip = std::make_unique<GameObject>(); 
+		playerShip->addComponent(
+			std::make_unique<MoveComponent>( 
+				400.f,   // max speed (px/s)
+				100.f,  // acceleration (px/s²)
+				1900.0f   // deceleration (px/s²)
+			)
+		);
+		playerShip->addComponent(std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp"));
 
-		ship->addComponent(std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")); 
+
+		input.addKeyboardCommand(SDL_SCANCODE_W,KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get())); 
+		input.addKeyboardCommand(SDL_SCANCODE_S,KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
+		input.addKeyboardCommand(SDL_SCANCODE_A,KeyState::Down, std::make_unique<MoveLeftCommand>(playerShip.get()));
+		input.addKeyboardCommand(SDL_SCANCODE_D,KeyState::Down, std::make_unique<MoveRightCommand>(playerShip.get()));
+
 		
-
-		mainLevel->add(std::move(ship)); 
+		mainLevel->add(std::move(playerShip));
 
 
 	}
