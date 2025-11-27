@@ -4,11 +4,14 @@
 #include "SceneManager.h"
 #include "Window.h"
 #include "PhysicsManager.h" 
-#include <thread>
+#include <thread> 
+#include <chrono>
 #include "TextureComponent.h"
 #include "KeyboardMoveCommand.h"
 #include "AnimationComponent.h"
 #include "PlayerAnimationComponent.h"
+#include "PhysicsBodyComponent.h"
+#include "BoxColliderComponent.h"
 
 namespace Papyrus
 {
@@ -76,23 +79,22 @@ namespace Papyrus
 	{
 		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
 
-		auto& input = Papyrus::InputManager::getInstance(); 
-		auto playerShip = std::make_unique<GameObject>();
+		auto& input = Papyrus::InputManager::getInstance();  
+		auto playerShip = std::make_unique<GameObject>();   
 
-		playerShip->addComponent(
+		playerShip->addComponent( 
 			std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")
 		);
 
-		// 7 frames laid out in 7 columns × 1 row
-		playerShip->addComponent(
-			std::make_unique<PlayerAnimationComponent>( 
-				7,      // columns (L2, L1, IDLE, R1, R2)
-				12.0f   // FPS 
+		playerShip->addComponent(  
+			std::make_unique<PlayerAnimationComponent>(  
+				7,      
+				12.0f   
 			)
-		);
+		); 
 
 		// Movement
-		playerShip->addComponent(
+		playerShip->addComponent( 
 			std::make_unique<MoveComponent>(
 				400.0f,
 				1600.0f,
@@ -100,10 +102,14 @@ namespace Papyrus
 			)
 		);
 
-		auto loner = std::make_unique<GameObject>(); 
+		playerShip->setTag("Player"); 
+
+		auto loner = std::make_unique<GameObject>();  
 
 		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp")); 
 		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8)); 
+		loner->addComponent(std::make_unique<PhysicsBodyComponent>()); 
+		loner->addComponent(std::make_unique<BoxColliderComponent>()); 
 
 		auto rusher = std::make_unique<GameObject>();
 
@@ -111,7 +117,9 @@ namespace Papyrus
 		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4*6, 8));
 
 		rusher->m_Transform.position.x = 120.f; 
-
+		
+		loner->setTag("Enemy"); 
+		rusher->setTag("Enemy"); 
 
 
 		input.addKeyboardCommand(SDL_SCANCODE_W, KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get()));

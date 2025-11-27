@@ -20,7 +20,7 @@ namespace Papyrus
 
 		b2Vec2 getSize() const;
 		Texture2D* getTexture() const { return m_pTexture; }
-
+		void setTexture(const std::string& fileName);
 
 	private:
 

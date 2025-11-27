@@ -11,6 +11,8 @@ namespace Papyrus
         explicit BulletComponent(float speedPixelsPerSecond);
 
         void fixedUpdate(float deltaTime) override;
+        void onTriggerEnter(GameObject* other) override; 
+
 
     private:
         float m_speed = 0.0f;

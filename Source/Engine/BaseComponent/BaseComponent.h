@@ -39,27 +39,16 @@ namespace Papyrus
 			m_pOwner = owner;
 			//Note: SetOwner is called by GameObject::AddComponent<T> after the component is created
 		}
-		void setEnabled(bool enabled)
-		{
-			if (enabled and not m_Enabled)
-			{
-				m_EnabledIsDirty = true;
-			}
-			else if (not enabled and m_Enabled)
-			{
-				m_DisabledIsDirty = true;
-			}
-			m_Enabled = enabled;
-		} 
 
 		bool m_PendingRemove = false;
+		bool m_Enabled = true;
+
 	protected:
 		//BaseComponent(GameObject& owner) { m_pOwner = &owner; }
 		BaseComponent() = default;
 
 	private:
 		GameObject* m_pOwner = nullptr;
-		bool m_Enabled = true;
 		bool m_EnabledIsDirty = true;
 		bool m_DisabledIsDirty = false;
 

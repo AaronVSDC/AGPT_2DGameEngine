@@ -10,7 +10,7 @@ namespace Papyrus
     {
         if (b2Shape_IsValid(m_shapeId))
         {
-            b2DestroyShape(m_shapeId, true); 
+            b2DestroyShape(m_shapeId, true);  
             m_shapeId = {};
         }
     }

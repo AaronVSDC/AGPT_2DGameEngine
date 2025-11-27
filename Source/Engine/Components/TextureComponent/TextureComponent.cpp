@@ -28,4 +28,10 @@ namespace Papyrus
 	{
 		return m_pTexture->getSize();
 	}
+
+	void TextureComponent::setTexture(const std::string& fileName)
+	{
+		m_FileName = fileName;
+		m_pTexture = ResourceManager::getInstance().loadTexture(m_FileName);
+	}
 }

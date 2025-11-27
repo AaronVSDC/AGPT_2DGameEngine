@@ -23,6 +23,10 @@ namespace Papyrus
         void update(float deltaTime) override;
         void render() const override;
 
+
+        int getFrameWidth() const { return m_frameWidthPixels; }
+        int getFrameHeight() const { return m_frameHeightPixels; }
+
     private:
         TextureComponent* m_textureComponent = nullptr;
 

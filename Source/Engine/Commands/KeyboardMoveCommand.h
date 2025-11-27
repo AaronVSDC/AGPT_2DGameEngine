@@ -6,6 +6,8 @@
 #include "MoveComponent.h"
 #include "BulletComponent.h"
 #include "AnimationComponent.h"
+#include "PhysicsBodyComponent.h"
+#include "BoxColliderComponent.h"
 
 namespace Papyrus
 {
@@ -125,7 +127,8 @@ namespace Papyrus
                 std::make_unique<BulletComponent>(800.0f) // speed (px/s)
             );
 
-
+            bullet->addComponent(std::make_unique<PhysicsBodyComponent>()); 
+            bullet->addComponent(std::make_unique<BoxColliderComponent>()); 
 
             bullet->addComponent(
                 std::make_unique<AnimationComponent>(2, 1, 2, 2));

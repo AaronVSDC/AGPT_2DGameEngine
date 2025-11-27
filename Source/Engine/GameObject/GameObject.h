@@ -100,6 +100,9 @@ namespace Papyrus
 		void markForRemoval();
 		bool isPendingRemoval() const noexcept { return m_pendingRemoval; }
 
+		void setTag(const std::string& tag) { m_Tag = tag; } 
+		const std::string& getTag() const { return m_Tag; } 
+
 		Transform m_Transform = {};
 
 	private:

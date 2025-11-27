@@ -36,11 +36,24 @@ Papyrus::Texture2D::Texture2D(const std::string& fullPath)
     if (!surface)
         std::cerr << "SDL_LoadBMP failed: " << SDL_GetError() << std::endl;
 
+    Uint32 pink = SDL_MapSurfaceRGB(surface, 255, 0, 255);
+
+    if (!SDL_SetSurfaceColorKey(surface, true, pink)) {
+        std::cerr << "SDL_SetSurfaceColorKey failed: " << SDL_GetError() << std::endl;
+        SDL_DestroySurface(surface);
+        return;
+    } 
+
     m_texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);
 
     if (!m_texture)
         std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
+   
+    if (!SDL_SetTextureBlendMode(m_texture, SDL_BLENDMODE_BLEND)) {
+        std::cerr << "SDL_SetTextureBlendMode failed: " << SDL_GetError() << std::endl;
+    }
+
 }
 
 Papyrus::Texture2D::Texture2D(SDL_Texture* texture)

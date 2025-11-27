@@ -17,6 +17,18 @@ namespace Papyrus
 		{
 			component->update(deltaTime);
 		}
+
+		m_Components.erase( 
+			std::remove_if( 
+				m_Components.begin(), 
+				m_Components.end(), 
+				[](const std::unique_ptr<BaseComponent>& comp)
+				{
+					return comp->m_PendingRemove;  
+				}
+			),
+			m_Components.end()
+		);
 	}
 
 	void GameObject::fixedUpdate(float fixedTimeStep)
