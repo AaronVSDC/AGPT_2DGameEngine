@@ -81,12 +81,12 @@ set(RESOURCE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
 set(RESOURCE_BINARY_DIR "$<TARGET_FILE_DIR:2DGameEngine>/Resources")
 
 add_custom_command(TARGET 2DGameEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}" 
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${RESOURCE_SOURCE_DIR}"
-            "${RESOURCE_BINARY_DIR}" 
+            "${RESOURCE_BINARY_DIR}"  
 )
-
+ 
     if (CMAKE_VERSION VERSION_GREATER 3.12) 
   set_property(TARGET 2DGameEngine PROPERTY CXX_STANDARD 20)  
 endif()    
