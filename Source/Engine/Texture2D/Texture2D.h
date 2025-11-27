@@ -18,6 +18,7 @@ namespace Papyrus
 		~Texture2D();
 
 		b2Vec2 getSize() const;
+		SDL_Texture* getHandle() const { return m_texture;  } 
 
 		Texture2D(const Texture2D&) = delete;
 		Texture2D(Texture2D&&) = delete;

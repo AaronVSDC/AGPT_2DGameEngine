@@ -7,6 +7,8 @@
 #include <thread>
 #include "TextureComponent.h"
 #include "KeyboardMoveCommand.h"
+#include "AnimationComponent.h"
+#include "PlayerAnimationComponent.h"
 
 namespace Papyrus
 {
@@ -75,26 +77,55 @@ namespace Papyrus
 		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
 
 		auto& input = Papyrus::InputManager::getInstance(); 
-		auto playerShip = std::make_unique<GameObject>(); 
+		auto playerShip = std::make_unique<GameObject>();
+
 		playerShip->addComponent(
-			std::make_unique<MoveComponent>( 
-				400.f,   // max speed (px/s)
-				100.f,  // acceleration (px/s²)
-				1900.0f   // deceleration (px/s²)
+			std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")
+		);
+
+		// 7 frames laid out in 7 columns × 1 row
+		playerShip->addComponent(
+			std::make_unique<PlayerAnimationComponent>( 
+				7,      // columns (L2, L1, IDLE, R1, R2)
+				12.0f   // FPS 
 			)
 		);
-		playerShip->addComponent(std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp"));
+
+		// Movement
+		playerShip->addComponent(
+			std::make_unique<MoveComponent>(
+				400.0f,
+				1600.0f,
+				2000.0f
+			)
+		);
+
+		auto loner = std::make_unique<GameObject>(); 
+
+		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp")); 
+		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8)); 
+
+		auto rusher = std::make_unique<GameObject>();
+
+		rusher->addComponent(std::make_unique<TextureComponent>("Resources/Textures/rusher.bmp"));
+		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4*6, 8));
+
+		rusher->m_Transform.position.x = 120.f; 
 
 
-		input.addKeyboardCommand(SDL_SCANCODE_W,KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get())); 
-		input.addKeyboardCommand(SDL_SCANCODE_S,KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
-		input.addKeyboardCommand(SDL_SCANCODE_A,KeyState::Down, std::make_unique<MoveLeftCommand>(playerShip.get()));
-		input.addKeyboardCommand(SDL_SCANCODE_D,KeyState::Down, std::make_unique<MoveRightCommand>(playerShip.get()));
 
-		
+		input.addKeyboardCommand(SDL_SCANCODE_W, KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get()));
+		input.addKeyboardCommand(SDL_SCANCODE_S, KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
+		input.addKeyboardCommand(SDL_SCANCODE_A, KeyState::Down, std::make_unique<MoveLeftCommand>(playerShip.get()));
+		input.addKeyboardCommand(SDL_SCANCODE_D, KeyState::Down, std::make_unique<MoveRightCommand>(playerShip.get()));
+		input.addKeyboardCommand(
+			SDL_SCANCODE_SPACE, 
+			KeyState::Up,
+			std::make_unique<ShootCommand>(playerShip.get()) 
+		);
 		mainLevel->add(std::move(playerShip));
-
-
+		mainLevel->add(std::move(rusher)); 
+		mainLevel->add(std::move(loner)); 
 	}
 
 }

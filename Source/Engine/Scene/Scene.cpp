@@ -28,6 +28,7 @@ namespace Papyrus
 		{
 			if (object->getIsActive()) object->update(deltaTime);
 		}
+		checkRemovalGameObject();   
 	}
 
 	void Scene::fixedUpdate(float fixedTimeStep)

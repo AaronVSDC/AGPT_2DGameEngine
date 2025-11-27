@@ -22,7 +22,7 @@ namespace Papyrus
         void renderTexture(const Texture2D& texture, float x, float y) const;
         void renderTexture(const Texture2D& texture, float x, float y, float rotationDegrees, SDL_FPoint* pivot = nullptr) const;
         void renderTexture(const Texture2D& texture, float x, float y, float width, float height, float rotationDegrees, SDL_FPoint* pivot = nullptr) const;
-
+        void renderTexture(const Texture2D& texture,const SDL_FRect& sourceRect,float x,float y,float width,float height,float rotationDegrees = 0.0f, SDL_FPoint* pivot = nullptr) const;
         SDL_Renderer* getSDLRenderer() const;
 
         const SDL_Color& getBackgroundColor() const { return m_ClearColor; }

@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
+#include "AnimationComponent.h" 
+#include "PlayerAnimationComponent.h" 
 
 namespace Papyrus
 {
@@ -14,6 +16,10 @@ namespace Papyrus
 
 	void TextureComponent::render() const
 	{
+		if (getOwner()->hasComponent<AnimationComponent>())
+			return;
+		if (getOwner()->hasComponent<PlayerAnimationComponent>()) 
+			return; 
 		auto pos = getOwner()->m_Transform.position; 
 		Renderer::getInstance().renderTexture(*m_pTexture, pos.x, pos.y);
 	}

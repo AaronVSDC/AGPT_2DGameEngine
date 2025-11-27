@@ -28,6 +28,8 @@ namespace Papyrus
     {
         const auto& color = getBackgroundColor();
 
+
+
         SDL_SetRenderDrawColor(
             m_Renderer,
             color.r,
@@ -116,6 +118,30 @@ namespace Papyrus
             texture.getSDLTexture(),
             nullptr,
             &dst,
+            rotationDegrees,
+            pivot,
+            SDL_FLIP_NONE
+        );
+    }
+
+    void Renderer::renderTexture(
+        const Texture2D& texture,
+        const SDL_FRect& sourceRect,
+        float x,
+        float y,
+        float width,
+        float height,
+        float rotationDegrees,
+        SDL_FPoint* pivot
+    ) const
+    {
+        SDL_FRect destinationRect{ x, y, width, height };
+
+        SDL_RenderTextureRotated(
+            m_Renderer,
+            texture.getSDLTexture(),
+            &sourceRect,
+            &destinationRect,
             rotationDegrees,
             pivot,
             SDL_FLIP_NONE

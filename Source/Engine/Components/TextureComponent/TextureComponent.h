@@ -19,6 +19,8 @@ namespace Papyrus
 		void render() const override;
 
 		b2Vec2 getSize() const;
+		Texture2D* getTexture() const { return m_pTexture; }
+
 
 	private:
 

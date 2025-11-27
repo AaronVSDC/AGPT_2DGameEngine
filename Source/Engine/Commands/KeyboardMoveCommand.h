@@ -4,6 +4,8 @@
 #include "Command.h"
 #include "GameObject.h"
 #include "MoveComponent.h"
+#include "BulletComponent.h"
+#include "AnimationComponent.h"
 
 namespace Papyrus
 {
@@ -86,6 +88,59 @@ namespace Papyrus
 
     private:
         GameObject* m_gameObject{};
+    };
+
+
+    class ShootCommand final : public Command
+    {
+    public:
+        explicit ShootCommand(GameObject* player)
+            : m_player(player) {}
+
+        void execute() override
+        {
+            if (!m_player)
+                return;
+
+            auto bullet = std::make_unique<GameObject>();
+
+            const b2Vec2 playerPos = m_player->m_Transform.position;
+
+            auto* playerTexture = m_player->getComponent<TextureComponent>();
+            if (!playerTexture)
+                return;
+
+            const b2Vec2 playerSize = playerTexture->getSize();
+
+            bullet->m_Transform.position = {
+                playerPos.x + 15,
+                playerPos.y
+            };
+
+            bullet->addComponent(
+                std::make_unique<TextureComponent>("Resources/Textures/missile.bmp")
+            );
+
+            bullet->addComponent(
+                std::make_unique<BulletComponent>(800.0f) // speed (px/s)
+            );
+
+
+
+            bullet->addComponent(
+                std::make_unique<AnimationComponent>(2, 1, 2, 2));
+            bullet->start();
+            bullet->onEnable();
+
+            SceneManager::getInstance()
+                .getCurrentScene()  
+                ->add(std::move(bullet));
+
+
+        }
+
+    private:
+        GameObject* m_player{};
     };
 }
 

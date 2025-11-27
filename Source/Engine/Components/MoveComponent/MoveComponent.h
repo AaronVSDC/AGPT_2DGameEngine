@@ -18,7 +18,9 @@ namespace Papyrus
         void update(float deltaTime) override;
 
         // Called by commands
-        void addAcceleration(const b2Vec2& direction);
+        void addAcceleration(const b2Vec2& direction); 
+        const b2Vec2& getVelocity() const { return m_velocity; }
+
 
     private:
         b2Vec2 m_velocity{ 0.0f, 0.0f };
