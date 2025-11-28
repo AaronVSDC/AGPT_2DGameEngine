@@ -20,8 +20,8 @@ namespace Papyrus
 	{
 		GWindow = std::make_unique<Window>(
 			"Papyrus Engine",
-			1280,
-			720
+			640,
+			480
 		);
 	}
 	PapyrusEngine::~PapyrusEngine()
@@ -81,6 +81,19 @@ namespace Papyrus
 		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
 
 		auto& input = Papyrus::InputManager::getInstance();  
+
+		auto background = std::make_unique<GameObject>();
+		background->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy2.bmp"));
+		background->m_Transform.position.x = 0.f;
+		background->m_Transform.position.y = 0.f;
+		mainLevel->add(std::move(background));
+
+		auto parallax = std::make_unique<GameObject>();
+		parallax->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy3.bmp"));
+		parallax->m_Transform.position.x = 0.f;
+		parallax->m_Transform.position.y = 0.f;
+		mainLevel->add(std::move(parallax));
+
 		auto playerShip = std::make_unique<GameObject>();   
 
 		playerShip->addComponent( 
