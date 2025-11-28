@@ -13,6 +13,7 @@
 #include "PhysicsBodyComponent.h"
 #include "BoxColliderComponent.h" 
 #include "LonerShooterComponent.h"
+#include "MoveDownComponent.h"
 
 namespace Papyrus
 {
@@ -88,10 +89,18 @@ namespace Papyrus
 		background->m_Transform.position.y = 0.f;
 		mainLevel->add(std::move(background));
 
+		auto parallax2 = std::make_unique<GameObject>();
+		parallax2->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy4.bmp"));
+		parallax2->addComponent(std::make_unique<MoveDownComponent>(30.f));
+		parallax2->m_Transform.position.x = 0.f;
+		parallax2->m_Transform.position.y = -900.f;
+		mainLevel->add(std::move(parallax2));
+
 		auto parallax = std::make_unique<GameObject>();
 		parallax->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy3.bmp"));
+		parallax->addComponent(std::make_unique<MoveDownComponent>(50.f));
 		parallax->m_Transform.position.x = 0.f;
-		parallax->m_Transform.position.y = 0.f;
+		parallax->m_Transform.position.y = -900.f;
 		mainLevel->add(std::move(parallax));
 
 		auto playerShip = std::make_unique<GameObject>();   
