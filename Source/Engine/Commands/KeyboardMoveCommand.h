@@ -122,16 +122,18 @@ namespace Papyrus
             bullet->addComponent(
                 std::make_unique<TextureComponent>("Resources/Textures/missile.bmp")
             );
-
             bullet->addComponent(
-                std::make_unique<BulletComponent>(800.0f) // speed (px/s)
-            );
+                std::make_unique<AnimationComponent>(2, 1, 2, 2));
+
+
 
             bullet->addComponent(std::make_unique<PhysicsBodyComponent>()); 
             bullet->addComponent(std::make_unique<BoxColliderComponent>()); 
 
+
             bullet->addComponent(
-                std::make_unique<AnimationComponent>(2, 1, 2, 2));
+                std::make_unique<BulletComponent>(800.0f) // speed (px/s)
+            );
             bullet->start();
             bullet->onEnable();
 

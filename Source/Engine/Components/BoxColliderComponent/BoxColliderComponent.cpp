@@ -3,14 +3,14 @@
 #include "TextureComponent.h"
 #include "PhysicsBodyComponent.h"
 #include "PhysicsManager.h"
-
+#include "CollisionSize.h"
 namespace Papyrus
 {
     BoxColliderComponent::~BoxColliderComponent()
     {
         if (b2Shape_IsValid(m_shapeId))
         {
-            b2DestroyShape(m_shapeId, true);  
+            b2DestroyShape(m_shapeId, true); 
             m_shapeId = {};
         }
     }
@@ -24,10 +24,10 @@ namespace Papyrus
         if (!textureComponent || !physicsBodyComponent)
             return;
 
-        const b2Vec2 sizePx = textureComponent->getSize();
+        const b2Vec2 sizePx = getCollisionSizePixels(owner);
         m_widthPixels = sizePx.x;
         m_heightPixels = sizePx.y;
-
+         
         PhysicsManager& physicsManager = PhysicsManager::getInstance();
 
         const float halfWidthMeters = physicsManager.pixelsToMeters(m_widthPixels * 0.5f);

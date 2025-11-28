@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "PhysicsManager.h"
 #include "TextureComponent.h"
+#include "CollisionSize.h" 
 
 namespace Papyrus
 {
@@ -24,10 +25,8 @@ namespace Papyrus
         PhysicsManager& physicsManager = PhysicsManager::getInstance();
         GameObject* owner = getOwner();
 
-        // Center = top-left + half sprite size
-        b2Vec2 sizePx{ 0,0 };
-        if (auto* textureComponent = owner->getComponent<TextureComponent>())
-            sizePx = textureComponent->getSize();
+        const b2Vec2 sizePx = getCollisionSizePixels(owner);
+
 
         b2Vec2 centerPx{
             owner->m_Transform.position.x + sizePx.x * 0.5f,
@@ -57,9 +56,8 @@ namespace Papyrus
         PhysicsManager& physicsManager = PhysicsManager::getInstance();
         GameObject* owner = getOwner();
 
-        b2Vec2 sizePx{ 0,0 };
-        if (auto* textureComponent = owner->getComponent<TextureComponent>())
-            sizePx = textureComponent->getSize();
+        const b2Vec2 sizePx = getCollisionSizePixels(owner); 
+
 
         b2Vec2 centerPx{
             owner->m_Transform.position.x + sizePx.x * 0.5f,

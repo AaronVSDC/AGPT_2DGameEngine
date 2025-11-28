@@ -11,7 +11,8 @@
 #include "AnimationComponent.h"
 #include "PlayerAnimationComponent.h"
 #include "PhysicsBodyComponent.h"
-#include "BoxColliderComponent.h"
+#include "BoxColliderComponent.h" 
+#include "LonerShooterComponent.h"
 
 namespace Papyrus
 {
@@ -109,12 +110,25 @@ namespace Papyrus
 		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp")); 
 		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8)); 
 		loner->addComponent(std::make_unique<PhysicsBodyComponent>()); 
-		loner->addComponent(std::make_unique<BoxColliderComponent>()); 
+		loner->addComponent(std::make_unique<BoxColliderComponent>());  
+
+		loner->setTag("Enemy");
+
+		// shooter
+		loner->addComponent(
+			std::make_unique<LonerShooterComponent>(
+				1.5f, // shots per second
+				350.0f, // bullet speed downwards
+				"Resources/Textures/EnWeap6.bmp"
+			)
+		);
 
 		auto rusher = std::make_unique<GameObject>();
 
 		rusher->addComponent(std::make_unique<TextureComponent>("Resources/Textures/rusher.bmp"));
 		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4*6, 8));
+		rusher->addComponent(std::make_unique<PhysicsBodyComponent>());
+		rusher->addComponent(std::make_unique<BoxColliderComponent>());
 
 		rusher->m_Transform.position.x = 120.f; 
 		

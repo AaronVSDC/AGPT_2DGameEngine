@@ -11,7 +11,7 @@ endif()
 project(2DGameEngine LANGUAGES CXX)  
  
 include(FetchContent)  
-
+ 
 # ----------------------------------------------------------------------------------
 # BOX2D
 # ----------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h" 
 )
 
-add_executable (2DGameEngine ${SOURCES})
+add_executable (2DGameEngine ${SOURCES} "Source/Engine/Components/EnemyBulletComponent/EnemyBulletComponent.cpp")
 
 
 # ----------------------------------------------------------------------------------
