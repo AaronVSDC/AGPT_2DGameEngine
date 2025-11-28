@@ -69,19 +69,13 @@ namespace Papyrus
         bullet->addComponent(std::make_unique<AnimationComponent>(8, 1, 8, 12));
 
 
-        bullet->addComponent(std::make_unique<PhysicsBodyComponent>(PhysicsBodyType::Kinematic));
+        bullet->addComponent(std::make_unique<PhysicsBodyComponent>());
 
         auto boxCollider = std::make_unique<BoxColliderComponent>();
-        boxCollider->setSensor(true);
         bullet->addComponent(std::move(boxCollider));
 
 
         bullet->addComponent(std::make_unique<EnemyBulletComponent>(m_bulletSpeed));
-
-
-        // Start runtime-spawned object after all components exist
-        bullet->start();
-        bullet->onEnable();
 
         SceneManager::getInstance().getCurrentScene()->add(std::move(bullet));
     }

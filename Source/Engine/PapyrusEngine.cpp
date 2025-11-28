@@ -132,7 +132,6 @@ namespace Papyrus
 
 		rusher->m_Transform.position.x = 120.f; 
 		
-		loner->setTag("Enemy"); 
 		rusher->setTag("Enemy"); 
 
 

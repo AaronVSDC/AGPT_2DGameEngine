@@ -35,12 +35,15 @@ namespace Papyrus
 	private:
 		explicit Scene(const std::string& name);
 
-
+		void flushPendingAdds();
+		 
 		void checkRemovalGameObject(); 
 
 		std::string m_Name;
 		std::vector<std::unique_ptr<GameObject>> m_Objects{};
+		std::vector<std::unique_ptr<GameObject>> m_PendingAdds{};
 
+		bool m_HasStarted = false;
 		static unsigned int m_idCounter;
 
 		bool m_IsActive = true;

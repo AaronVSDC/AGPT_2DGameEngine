@@ -115,7 +115,7 @@ namespace Papyrus
         if (!b2World_IsValid(m_worldId))
             return;
 
-        b2World_Step(m_worldId, fixedDeltaTime, m_subStepCount); 
+        b2World_Step(m_worldId, fixedDeltaTime, m_subStepCount);
 
         dispatchSensorEventsToComponents(m_worldId);
 

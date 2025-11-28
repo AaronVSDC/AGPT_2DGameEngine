@@ -22,6 +22,9 @@ namespace Papyrus
 
     void PhysicsBodyComponent::start()
     {
+        if (b2Body_IsValid(m_bodyId))
+            return;
+
         PhysicsManager& physicsManager = PhysicsManager::getInstance();
         GameObject* owner = getOwner();
 

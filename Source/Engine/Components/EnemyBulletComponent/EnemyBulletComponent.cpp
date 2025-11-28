@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 #include "ExplosionUtility.h"
+#include <iostream>
 
 namespace Papyrus
 {
@@ -18,10 +19,14 @@ namespace Papyrus
         {
             getOwner()->markForRemoval();
         }
+
+
     }
 
     void EnemyBulletComponent::onTriggerEnter(GameObject* other)
     {
+        std::cout << "EnemyBullet trigger with tag=" << (other ? other->getTag() : "null") << "\n";
+
         if (!other) return;
 
         if (other->getTag() != "Player")

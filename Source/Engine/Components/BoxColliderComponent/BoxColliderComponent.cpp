@@ -17,6 +17,8 @@ namespace Papyrus
 
     void BoxColliderComponent::start()
     {
+        if (b2Shape_IsValid(m_shapeId))
+            return;
         GameObject* owner = getOwner();
 
         auto* textureComponent = owner->getComponent<TextureComponent>();
