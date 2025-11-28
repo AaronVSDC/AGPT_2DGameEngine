@@ -15,6 +15,8 @@
 #include "LonerShooterComponent.h"
 #include "MoveVerticalComponent.h"
 #include "MoveHorizontalComponent.h"
+#include "EnemySpawnComponent.h"
+
 namespace Papyrus
 {
 	PapyrusEngine::PapyrusEngine()
@@ -91,14 +93,14 @@ namespace Papyrus
 
 		auto parallax2 = std::make_unique<GameObject>();
 		parallax2->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy4.bmp"));
-		parallax2->addComponent(std::make_unique<MoveVerticalComponent>(30.f));
+		//parallax2->addComponent(std::make_unique<MoveVerticalComponent>(30.f));
 		parallax2->m_Transform.position.x = 0.f;
 		parallax2->m_Transform.position.y = -900.f;
 		mainLevel->add(std::move(parallax2));
 
 		auto parallax = std::make_unique<GameObject>();
 		parallax->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy3.bmp"));
-		parallax->addComponent(std::make_unique<MoveVerticalComponent>(40.f));
+		//parallax->addComponent(std::make_unique<MoveVerticalComponent>(40.f));
 		parallax->m_Transform.position.x = 0.f;
 		parallax->m_Transform.position.y = -900.f;
 		mainLevel->add(std::move(parallax));
@@ -130,36 +132,8 @@ namespace Papyrus
 
 		playerShip->setTag("Player");
 
-		auto loner = std::make_unique<GameObject>();
-
-		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp"));
-		loner->addComponent(std::make_unique<MoveHorizontalComponent>(60.f, 150.f)); // px/sec, reverse after X
-		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8));
-		loner->addComponent(std::make_unique<PhysicsBodyComponent>());
-		loner->addComponent(std::make_unique<BoxColliderComponent>());
-
-		loner->setTag("Enemy");
-
-		// shooter
-		loner->addComponent(
-			std::make_unique<LonerShooterComponent>(
-				1.5f, // shots per second
-				350.0f, // bullet speed downwards
-				"Resources/Textures/EnWeap6.bmp"
-			)
-		);
-
-		auto rusher = std::make_unique<GameObject>();
-
-		rusher->addComponent(std::make_unique<TextureComponent>("Resources/Textures/rusher.bmp"));
-		rusher->addComponent(std::make_unique<MoveVerticalComponent>(40.f, 100.f)); // px/sec, reverse after X
-		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4 * 6, 8));
-		rusher->addComponent(std::make_unique<PhysicsBodyComponent>());
-		rusher->addComponent(std::make_unique<BoxColliderComponent>());
-
-		rusher->m_Transform.position.x = 120.f;
-
-		rusher->setTag("Enemy");
+		auto enemySpawner = std::make_unique<GameObject>(); 
+		enemySpawner->addComponent(std::make_unique<EnemySpawnerComponent>(3.f,GWindow->getWidht()));  
 
 		input.addController(0);
 
@@ -180,8 +154,7 @@ namespace Papyrus
 		input.addControllerCommand(0, ControllerButton::A, KeyState::Pressed, std::make_unique<ShootCommand>(playerShip.get()));
 		input.addControllerStickCommand(0, Stick::Left, 0.2f, true, std::make_unique<AnalogMoveCommand>(playerShip.get()));
 		mainLevel->add(std::move(playerShip));
-		mainLevel->add(std::move(rusher));
-		mainLevel->add(std::move(loner));
+		mainLevel->add(std::move(enemySpawner)); 
 	}
 
 }

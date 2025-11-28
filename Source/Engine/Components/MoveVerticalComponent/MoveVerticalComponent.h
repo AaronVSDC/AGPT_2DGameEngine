@@ -9,15 +9,12 @@ namespace Papyrus
     class MoveVerticalComponent : public BaseComponent
     {
     public:
-        MoveVerticalComponent(float speed, float reverseDistance = 300.f); // optional distance to reverse
+        MoveVerticalComponent();  
 
         void update(float deltaTime) override;
 
     private:
-        float m_speed = 100.f;
-        float m_reverseDistance = 300.f; // distance before reversing
-        float m_startY = 0.f;
-        bool m_movingDown = true;
+
     };
 }
 

@@ -8,15 +8,12 @@ namespace Papyrus
     class MoveHorizontalComponent : public BaseComponent
     {
     public:
-        MoveHorizontalComponent(float speed, float reverseDistance = 200.f);
+        MoveHorizontalComponent();
 
         void update(float deltaTime) override;
 
     private:
-        float m_speed = 100.f;           // pixels per second
-        float m_reverseDistance = 200.f;  // distance to reverse
-        float m_startX = 0.f;
-        bool m_movingLeft = true;        // start moving left
+
     };
 }
 
