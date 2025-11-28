@@ -13,8 +13,8 @@
 #include "PhysicsBodyComponent.h"
 #include "BoxColliderComponent.h" 
 #include "LonerShooterComponent.h"
-#include "MoveDownComponent.h"
-
+#include "MoveVerticalComponent.h"
+#include "MoveHorizontalComponent.h"
 namespace Papyrus
 {
 	PapyrusEngine::PapyrusEngine()
@@ -81,7 +81,7 @@ namespace Papyrus
 	{
 		auto mainLevel = SceneManager::getInstance().createScene("mainLevelScene");
 
-		auto& input = Papyrus::InputManager::getInstance();  
+		auto& input = Papyrus::InputManager::getInstance();
 
 		auto background = std::make_unique<GameObject>();
 		background->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy2.bmp"));
@@ -91,67 +91,69 @@ namespace Papyrus
 
 		auto parallax2 = std::make_unique<GameObject>();
 		parallax2->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy4.bmp"));
-		parallax2->addComponent(std::make_unique<MoveDownComponent>(30.f));
+		parallax2->addComponent(std::make_unique<MoveVerticalComponent>(30.f));
 		parallax2->m_Transform.position.x = 0.f;
 		parallax2->m_Transform.position.y = -900.f;
 		mainLevel->add(std::move(parallax2));
 
 		auto parallax = std::make_unique<GameObject>();
 		parallax->addComponent(std::make_unique<TextureComponent>("Resources/Textures/galaxy3.bmp"));
-		parallax->addComponent(std::make_unique<MoveDownComponent>(50.f));
+		parallax->addComponent(std::make_unique<MoveVerticalComponent>(40.f));
 		parallax->m_Transform.position.x = 0.f;
 		parallax->m_Transform.position.y = -900.f;
 		mainLevel->add(std::move(parallax));
 
-		auto playerShip = std::make_unique<GameObject>();   
+		auto playerShip = std::make_unique<GameObject>();
 
-		playerShip->addComponent( 
+		playerShip->addComponent(
 			std::make_unique<TextureComponent>("Resources/Textures/Ship1.bmp")
 		);
 
-		playerShip->addComponent(  
-			std::make_unique<PlayerAnimationComponent>(  
-				7,      
-				12.0f   
+		playerShip->addComponent(
+			std::make_unique<PlayerAnimationComponent>(
+				7,
+				12.0f
 			)
-		); 
+		);
 
 		// Movement
-		playerShip->addComponent( 
+		playerShip->addComponent(
 			std::make_unique<MoveComponent>(
 				400.0f,
 				1600.0f,
 				2000.0f
 			)
-		); 
+		);
 
 		playerShip->addComponent(std::make_unique<PhysicsBodyComponent>());
 		playerShip->addComponent(std::make_unique<BoxColliderComponent>());
 
-		playerShip->setTag("Player"); 
+		playerShip->setTag("Player");
 
-		auto loner = std::make_unique<GameObject>();  
+		auto loner = std::make_unique<GameObject>();
 
-		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp")); 
-		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8)); 
-		loner->addComponent(std::make_unique<PhysicsBodyComponent>()); 
-		loner->addComponent(std::make_unique<BoxColliderComponent>());  
+		loner->addComponent(std::make_unique<TextureComponent>("Resources/Textures/LonerA.bmp"));
+		loner->addComponent(std::make_unique<MoveHorizontalComponent>(60.f, 150.f)); // px/sec, reverse after X
+		loner->addComponent(std::make_unique<AnimationComponent>(4, 4, 16, 8));
+		loner->addComponent(std::make_unique<PhysicsBodyComponent>());
+		loner->addComponent(std::make_unique<BoxColliderComponent>());
 
 		loner->setTag("Enemy");
 
 		// shooter
-		//loner->addComponent(
-		//	std::make_unique<LonerShooterComponent>(
-		//		1.5f, // shots per second
-		//		350.0f, // bullet speed downwards
-		//		"Resources/Textures/EnWeap6.bmp"
-		//	)
-		//);
+		loner->addComponent(
+			std::make_unique<LonerShooterComponent>(
+				1.5f, // shots per second
+				350.0f, // bullet speed downwards
+				"Resources/Textures/EnWeap6.bmp"
+			)
+		);
 
 		auto rusher = std::make_unique<GameObject>();
 
 		rusher->addComponent(std::make_unique<TextureComponent>("Resources/Textures/rusher.bmp"));
-		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4*6, 8));
+		rusher->addComponent(std::make_unique<MoveVerticalComponent>(40.f, 100.f)); // px/sec, reverse after X
+		rusher->addComponent(std::make_unique<AnimationComponent>(4, 6, 4 * 6, 8));
 		rusher->addComponent(std::make_unique<PhysicsBodyComponent>());
 		rusher->addComponent(std::make_unique<BoxColliderComponent>());
 
@@ -160,7 +162,7 @@ namespace Papyrus
 		rusher->setTag("Enemy");
 
 		input.addController(0);
-	
+
 
 		input.addKeyboardCommand(SDL_SCANCODE_W, KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get()));
 		input.addKeyboardCommand(SDL_SCANCODE_S, KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
