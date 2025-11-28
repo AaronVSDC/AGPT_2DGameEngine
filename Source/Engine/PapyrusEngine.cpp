@@ -123,7 +123,10 @@ namespace Papyrus
 				1600.0f,
 				2000.0f
 			)
-		);
+		); 
+
+		playerShip->addComponent(std::make_unique<PhysicsBodyComponent>());
+		playerShip->addComponent(std::make_unique<BoxColliderComponent>());
 
 		playerShip->setTag("Player"); 
 
@@ -137,13 +140,13 @@ namespace Papyrus
 		loner->setTag("Enemy");
 
 		// shooter
-		loner->addComponent(
-			std::make_unique<LonerShooterComponent>(
-				1.5f, // shots per second
-				350.0f, // bullet speed downwards
-				"Resources/Textures/EnWeap6.bmp"
-			)
-		);
+		//loner->addComponent(
+		//	std::make_unique<LonerShooterComponent>(
+		//		1.5f, // shots per second
+		//		350.0f, // bullet speed downwards
+		//		"Resources/Textures/EnWeap6.bmp"
+		//	)
+		//);
 
 		auto rusher = std::make_unique<GameObject>();
 
@@ -152,23 +155,31 @@ namespace Papyrus
 		rusher->addComponent(std::make_unique<PhysicsBodyComponent>());
 		rusher->addComponent(std::make_unique<BoxColliderComponent>());
 
-		rusher->m_Transform.position.x = 120.f; 
-		
-		rusher->setTag("Enemy"); 
+		rusher->m_Transform.position.x = 120.f;
 
+		rusher->setTag("Enemy");
+
+		input.addController(0);
+	
 
 		input.addKeyboardCommand(SDL_SCANCODE_W, KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get()));
 		input.addKeyboardCommand(SDL_SCANCODE_S, KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
 		input.addKeyboardCommand(SDL_SCANCODE_A, KeyState::Down, std::make_unique<MoveLeftCommand>(playerShip.get()));
 		input.addKeyboardCommand(SDL_SCANCODE_D, KeyState::Down, std::make_unique<MoveRightCommand>(playerShip.get()));
 		input.addKeyboardCommand(
-			SDL_SCANCODE_SPACE, 
+			SDL_SCANCODE_SPACE,
 			KeyState::Up,
-			std::make_unique<ShootCommand>(playerShip.get()) 
+			std::make_unique<ShootCommand>(playerShip.get())
 		);
+		input.addControllerCommand(0, ControllerButton::DPadUp, KeyState::Down, std::make_unique<MoveUpCommand>(playerShip.get()));
+		input.addControllerCommand(0, ControllerButton::DPadDown, KeyState::Down, std::make_unique<MoveDownCommand>(playerShip.get()));
+		input.addControllerCommand(0, ControllerButton::DPadLeft, KeyState::Down, std::make_unique<MoveLeftCommand>(playerShip.get()));
+		input.addControllerCommand(0, ControllerButton::DPadRight, KeyState::Down, std::make_unique<MoveRightCommand>(playerShip.get()));
+		input.addControllerCommand(0, ControllerButton::A, KeyState::Pressed, std::make_unique<ShootCommand>(playerShip.get()));
+		input.addControllerStickCommand(0, Stick::Left, 0.2f, true, std::make_unique<AnalogMoveCommand>(playerShip.get()));
 		mainLevel->add(std::move(playerShip));
-		mainLevel->add(std::move(rusher)); 
-		mainLevel->add(std::move(loner)); 
+		mainLevel->add(std::move(rusher));
+		mainLevel->add(std::move(loner));
 	}
 
 }

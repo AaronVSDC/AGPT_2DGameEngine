@@ -1,134 +1,139 @@
 #include "Controller.h"
+#include <iostream>
 #include <cmath>
+#include <algorithm>
 
 namespace Papyrus
 {
     class Controller::ControllerImpl
     {
     public:
-        explicit ControllerImpl(uint8_t index)
-            : m_Index(index)
+        explicit ControllerImpl(SDL_JoystickID instanceId)
+            : m_instanceId(instanceId)
         {
-            m_Gamepad = SDL_OpenGamepad(index);
+            m_gamepad = SDL_OpenGamepad(instanceId);
+            if (!m_gamepad)
+            {
+                std::cerr << "SDL_OpenGamepad failed (instanceId=" << instanceId
+                    << "): " << SDL_GetError() << "\n";
+            }
         }
 
         ~ControllerImpl()
         {
-            if (m_Gamepad)
-                SDL_CloseGamepad(m_Gamepad);
+            if (m_gamepad)
+            {
+                SDL_CloseGamepad(m_gamepad);
+                m_gamepad = nullptr;
+            }
         }
 
         void update()
         {
-            if (!m_Gamepad)
+            if (!m_gamepad)
                 return;
 
-            m_PreviousButtons = m_CurrentButtons;
-            m_CurrentButtons = 0;
+            m_previousButtons = m_currentButtons;
+            m_currentButtons = 0;
 
-            // Poll all buttons
-            for (int i = 0; i < SDL_GAMEPAD_BUTTON_COUNT; ++i) 
+            for (int buttonIndex = 0; buttonIndex < SDL_GAMEPAD_BUTTON_COUNT; ++buttonIndex)
             {
-                if (SDL_GetGamepadButton(m_Gamepad, static_cast<SDL_GamepadButton>(i)))
+                if (SDL_GetGamepadButton(m_gamepad, static_cast<SDL_GamepadButton>(buttonIndex)))
                 {
-                    m_CurrentButtons |= (1u << i);
+                    m_currentButtons |= (1u << buttonIndex);
                 }
             }
         }
 
         bool isDown(ControllerButton button) const
         {
-            return (m_CurrentButtons & (1u << static_cast<uint32_t>(button))) != 0;
+            const uint32_t mask = 1u << static_cast<int>(button);
+            return (m_currentButtons & mask) != 0;
         }
 
         bool isPressed(ControllerButton button) const
         {
-            const uint32_t mask = 1u << static_cast<uint32_t>(button);
-            return (m_CurrentButtons & mask) && !(m_PreviousButtons & mask);
+            const uint32_t mask = 1u << static_cast<int>(button);
+            return (m_currentButtons & mask) && !(m_previousButtons & mask);
         }
 
         bool isUp(ControllerButton button) const
         {
-            const uint32_t mask = 1u << static_cast<uint32_t>(button);
-            return !(m_CurrentButtons & mask) && (m_PreviousButtons & mask);
+            const uint32_t mask = 1u << static_cast<int>(button);
+            return !(m_currentButtons & mask) && (m_previousButtons & mask);
         }
 
         b2Vec2 getLeftThumb() const
         {
-            if (!m_Gamepad)
-                return { 0.0f, 0.0f };
-
-            float x = SDL_GetGamepadAxis(m_Gamepad, SDL_GAMEPAD_AXIS_LEFTX) / 32767.0f; //the division is to normalize it to -1,1
-            float y = SDL_GetGamepadAxis(m_Gamepad, SDL_GAMEPAD_AXIS_LEFTY) / 32767.0f;
-
-            applyDeadzone(x, y);
-            return { x, -y };
+            return getStick(SDL_GAMEPAD_AXIS_LEFTX, SDL_GAMEPAD_AXIS_LEFTY);
         }
 
         b2Vec2 getRightThumb() const
         {
-            if (!m_Gamepad)
-                return { 0.0f, 0.0f };
-
-            float x = SDL_GetGamepadAxis(m_Gamepad, SDL_GAMEPAD_AXIS_RIGHTX) / 32767.0f;
-            float y = SDL_GetGamepadAxis(m_Gamepad, SDL_GAMEPAD_AXIS_RIGHTY) / 32767.0f;
-
-            applyDeadzone(x, y);
-            return { x, -y };
+            return getStick(SDL_GAMEPAD_AXIS_RIGHTX, SDL_GAMEPAD_AXIS_RIGHTY);
         }
 
+        bool isOpen() const { return m_gamepad != nullptr; }
+        SDL_JoystickID getInstanceId() const { return m_instanceId; }
+
     private:
+        static float normalizeAxisValue(int value)
+        {
+            // SDL axis is typically -32768..32767
+            if (value >= 0)
+                return static_cast<float>(value) / 32767.0f;
+
+            return static_cast<float>(value) / 32768.0f;
+        }
+
         static void applyDeadzone(float& x, float& y)
         {
             constexpr float deadZone = 0.15f;
-
             if (std::fabs(x) < deadZone) x = 0.0f;
             if (std::fabs(y) < deadZone) y = 0.0f;
         }
 
-    private:
-        uint8_t m_Index{};
-        SDL_Gamepad* m_Gamepad{};
+        b2Vec2 getStick(SDL_GamepadAxis axisX, SDL_GamepadAxis axisY) const
+        {
+            if (!m_gamepad)
+                return { 0.0f, 0.0f };
 
-        uint32_t m_CurrentButtons{};
-        uint32_t m_PreviousButtons{};
+            const int rawX = SDL_GetGamepadAxis(m_gamepad, axisX);
+            const int rawY = SDL_GetGamepadAxis(m_gamepad, axisY);
+
+            float x = normalizeAxisValue(rawX);
+            float y = normalizeAxisValue(rawY);
+
+            applyDeadzone(x, y);
+
+            // Invert Y so up is positive (match your existing convention)
+            return { x, -y };
+        }
+
+    private:
+        SDL_JoystickID m_instanceId{};
+        SDL_Gamepad* m_gamepad{};
+
+        uint32_t m_currentButtons{};
+        uint32_t m_previousButtons{};
     };
 
-
-    Controller::Controller(uint8_t controllerIndex)
-        : m_pImpl(std::make_unique<ControllerImpl>(controllerIndex))
+    Controller::Controller(SDL_JoystickID instanceId)
+        : m_implementation(std::make_unique<ControllerImpl>(instanceId))
     {
     }
 
     Controller::~Controller() = default;
 
-    bool Controller::isDown(ControllerButton button) const
-    {
-        return m_pImpl->isDown(button);
-    }
+    void Controller::update() { m_implementation->update(); }
 
-    bool Controller::isPressed(ControllerButton button) const
-    {
-        return m_pImpl->isPressed(button);
-    }
+    bool Controller::isDown(ControllerButton button) const { return m_implementation->isDown(button); }
+    bool Controller::isPressed(ControllerButton button) const { return m_implementation->isPressed(button); }
+    bool Controller::isUp(ControllerButton button) const { return m_implementation->isUp(button); }
 
-    bool Controller::isUp(ControllerButton button) const
-    {
-        return m_pImpl->isUp(button);
-    }
+    b2Vec2 Controller::getLeftThumb() const { return m_implementation->getLeftThumb(); }
+    b2Vec2 Controller::getRightThumb() const { return m_implementation->getRightThumb(); }
 
-    void Controller::update()
-    {
-        m_pImpl->update();
-    }
-
-    b2Vec2 Controller::getLeftThumb() const
-    {
-        return m_pImpl->getLeftThumb();
-    }
-
-    b2Vec2 Controller::getRightThumb() const
-    {
-        return m_pImpl->getRightThumb();
-    }
+    bool Controller::isOpen() const { return m_implementation->isOpen(); }
+    SDL_JoystickID Controller::getInstanceId() const { return m_implementation->getInstanceId(); }
 }

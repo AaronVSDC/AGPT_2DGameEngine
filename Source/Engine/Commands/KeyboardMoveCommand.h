@@ -147,6 +147,38 @@ namespace Papyrus
     private:
         GameObject* m_player{};
     };
+
+
+    class AnalogMoveCommand final : public AnalogCommand
+    {
+    public:
+        explicit AnalogMoveCommand(GameObject* gameObject)
+            : m_gameObject(gameObject)
+        {
+        }
+
+        void execute(const b2Vec2& value) override
+        {
+            if (!m_gameObject)
+                return;
+
+            auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
+            if (!moveComponent)
+                return; 
+
+            const float magnitude = std::sqrt(value.x * value.x + value.y * value.y);
+            if (magnitude <= 0.0f)
+                return;
+
+            const b2Vec2 normalizedDirection{ value.x / magnitude, -value.y / magnitude };
+            moveComponent->addAcceleration(normalizedDirection);
+        }
+
+    private:
+        GameObject* m_gameObject{};
+    };
 }
+
+
 
 #endif

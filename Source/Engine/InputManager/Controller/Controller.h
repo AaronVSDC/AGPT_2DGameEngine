@@ -4,12 +4,11 @@
 #include <memory>
 #include <cstdint>
 #include <box2d/math_functions.h>
-#include <SDL3\SDL.h> 
-
+#include <SDL3/SDL.h>
 
 namespace Papyrus
 {
-    enum class ControllerButton : uint32_t
+    enum class ControllerButton : int
     {
         DPadUp = SDL_GAMEPAD_BUTTON_DPAD_UP,
         DPadDown = SDL_GAMEPAD_BUTTON_DPAD_DOWN,
@@ -47,7 +46,7 @@ namespace Papyrus
     class Controller
     {
     public:
-        explicit Controller(uint8_t controllerIndex);
+        explicit Controller(SDL_JoystickID instanceId);
         ~Controller();
 
         Controller(const Controller&) = delete;
@@ -55,18 +54,21 @@ namespace Papyrus
         Controller(Controller&&) = delete;
         Controller& operator=(Controller&&) = delete;
 
+        void update();
+
         bool isDown(ControllerButton button) const;
         bool isPressed(ControllerButton button) const;
         bool isUp(ControllerButton button) const;
 
-        void update();
-
         b2Vec2 getLeftThumb() const;
         b2Vec2 getRightThumb() const;
 
+        bool isOpen() const;
+        SDL_JoystickID getInstanceId() const;
+
     private:
         class ControllerImpl;
-        std::unique_ptr<ControllerImpl> m_pImpl;
+        std::unique_ptr<ControllerImpl> m_implementation;
     };
 }
 

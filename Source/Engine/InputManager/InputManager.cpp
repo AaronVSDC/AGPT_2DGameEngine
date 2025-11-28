@@ -1,141 +1,226 @@
 #include "InputManager.h"
-#include <box2d\math_functions.h>
-
-#include <cassert>
 #include <iostream>
-#include <algorithm>
+#include <cmath>
 
 namespace Papyrus
 {
+    InputManager::InputManager()
+    {
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD); 
+        // Make sure the gamepad subsystem is initialized somewhere in your boot code.
+        // If you don't have a centralized init, doing it here is fine.
+        if (!SDL_InitSubSystem(SDL_INIT_GAMEPAD))
+        {
+            std::cerr << "SDL_InitSubSystem(SDL_INIT_GAMEPAD) failed: " << SDL_GetError() << "\n";
+        }
+
+        // Keyboard state arrays
+        int keyboardCount = 0;
+        const bool* keyboardState = SDL_GetKeyboardState(&keyboardCount);
+        (void)keyboardState;
+
+        m_currentKeyboardState.resize(keyboardCount, 0);
+        m_previousKeyboardState.resize(keyboardCount, 0);
+    }
+
+    InputManager::~InputManager() = default;
 
     bool InputManager::processInput()
     {
-        for (auto& controller : m_Controllers)
+        // Pump events so SDL updates input state
+        SDL_Event event{};
+        while (SDL_PollEvent(&event))
         {
-            if (controller)
+            if (event.type == SDL_EVENT_QUIT)
+                return false;
+        }
+
+        updateKeyboardState();
+
+        // Update controllers
+        for (auto& controller : m_controllers)
+        {
+            if (controller && controller->isOpen())
                 controller->update();
         }
 
-        SDL_Event e;
-        while (SDL_PollEvent(&e))
+        // Keyboard bindings
+        for (auto& binding : m_keyboardBindings)
         {
-            if (e.type == SDL_EVENT_QUIT)
-                return false;
+            const KeyboardBindingKey& key = binding.first;
+            Command* command = binding.second.get();
 
-            if (e.type == SDL_EVENT_KEY_DOWN && !e.key.repeat)
-            {
-                for (auto& binding : m_KeyboardCommands)
-                {
-                    if (binding.state == KeyState::Pressed &&
-                        binding.key == e.key.scancode)
-                    {
-                        binding.command->execute();
-                    }
-                }
-            }
+            bool shouldExecute = false;
+            if (key.state == KeyState::Down)    shouldExecute = isKeyboardDown(key.scanCode);
+            if (key.state == KeyState::Pressed) shouldExecute = isKeyboardPressed(key.scanCode);
+            if (key.state == KeyState::Up)      shouldExecute = isKeyboardUp(key.scanCode);
 
-            if (e.type == SDL_EVENT_KEY_UP)
-            {
-                for (auto& binding : m_KeyboardCommands)
-                {
-                    if (binding.state == KeyState::Up &&
-                        binding.key == e.key.scancode)
-                    {
-                        binding.command->execute();
-                    }
-                }
-            }
+            if (shouldExecute && command)
+                command->execute();
         }
 
-        const bool* keyboardState = SDL_GetKeyboardState(nullptr);
-
-        for (auto& binding : m_KeyboardCommands)
+        // Controller button bindings
+        for (auto& binding : m_controllerBindings)
         {
-            if (binding.state == KeyState::Down &&
-                keyboardState[binding.key])
-            {
-                binding.command->execute();
-            }
-        }
+            const ControllerBindingKey& key = binding.first;
+            Command* command = binding.second.get();
 
-        for (auto& binding : m_ControllerCommands)
-        {
-            Controller* controller = m_Controllers[binding.controllerIdx].get();
-            if (!controller)
+            if (key.controllerSlot < 0 || key.controllerSlot >= static_cast<int>(m_controllers.size()))
                 continue;
 
-            switch (binding.state)
-            {
-            case KeyState::Pressed:
-                if (controller->isPressed(binding.button))
-                    binding.command->execute();
-                break;
-
-            case KeyState::Down:
-                if (controller->isDown(binding.button))
-                    binding.command->execute();
-                break;
-
-            case KeyState::Up:
-                if (controller->isUp(binding.button))
-                    binding.command->execute();
-                break;
-            }
-        }
-
-        for (auto& binding : m_StickCommands)
-        {
-            Controller* controller = m_Controllers[binding.controllerIdx].get();
-            if (!controller)
+            Controller* controller = m_controllers[key.controllerSlot].get();
+            if (!controller || !controller->isOpen())
                 continue;
 
-            b2Vec2 raw = (binding.stick == Stick::Left) 
+            bool shouldExecute = false;
+            if (key.state == KeyState::Down)    shouldExecute = controller->isDown(key.button);
+            if (key.state == KeyState::Pressed) shouldExecute = controller->isPressed(key.button);
+            if (key.state == KeyState::Up)      shouldExecute = controller->isUp(key.button);
+
+            if (shouldExecute && command)
+                command->execute();
+        }
+
+        // Controller stick bindings
+        for (auto& stickBinding : m_stickBindings)
+        {
+            if (stickBinding.controllerSlot < 0 || stickBinding.controllerSlot >= static_cast<int>(m_controllers.size()))
+                continue;
+
+            Controller* controller = m_controllers[stickBinding.controllerSlot].get();
+            if (!controller || !controller->isOpen())
+                continue;
+
+            b2Vec2 value = (stickBinding.stick == Stick::Left)
                 ? controller->getLeftThumb()
                 : controller->getRightThumb();
 
-            const float mag = std::sqrt(raw.x * raw.x + raw.y * raw.y); 
+            const float magnitude = std::sqrt(value.x * value.x + value.y * value.y);
+            if (magnitude < stickBinding.deadzone)
+                continue;
 
-            if (mag <= binding.deadzone)
+            if (stickBinding.normalize && magnitude > 0.0f)
             {
-                raw = b2Vec2_zero; 
-            }
-            else if (binding.normalize && mag > 0.f)
-            {
-                const float t = (mag - binding.deadzone) / (1.f - binding.deadzone);
-                const float clampedT = std::clamp(t, 0.f, 1.f);
-
-                raw.x = (raw.x / mag) * clampedT;
-                raw.y = (raw.y / mag) * clampedT;
+                value.x /= magnitude;
+                value.y /= magnitude;
             }
 
-            if (raw.x != 0.f || raw.y != 0.f)
-            {
-                binding.command->execute(raw);
-            }
+            if (stickBinding.command)
+                stickBinding.command->execute(value);
         }
 
         return true;
     }
 
-
-    void InputManager::addController(uint8_t index)
+    void InputManager::addKeyboardCommand(SDL_Scancode scanCode, KeyState state, std::unique_ptr<Command> command)
     {
-        m_Controllers.push_back(std::make_unique<Controller>(index));
+        KeyboardBindingKey key{ scanCode, state };
+        m_keyboardBindings[key] = std::move(command);
     }
 
-    void InputManager::addControllerCommand(uint8_t controllerIdx, ControllerButton button, KeyState state, std::unique_ptr<Command> command)
+    bool InputManager::addController(int controllerSlot)
     {
-        assert(controllerIdx < m_Controllers.size() && "Trying to access controller index that does not exist, create the right controller first or check if indexing properly");
-        m_ControllerCommands.push_back(ControllerBinding{ controllerIdx, button, state, std::move(command) });
-    }
-    void InputManager::addControllerStickCommand(uint8_t controllerIdx, Stick stick, float deadzone, bool normalize, std::unique_ptr<AnalogCommand> command)
-    {
-        assert(controllerIdx < m_Controllers.size());
-        m_StickCommands.push_back(StickBinding{ controllerIdx, stick, deadzone, normalize, std::move(command) });
+        int count = 0;
+        SDL_JoystickID* instanceIds = SDL_GetGamepads(&count);
+        if (!instanceIds || count <= 0)
+        {
+            std::cerr << "SDL_GetGamepads found no gamepads: " << SDL_GetError() << "\n";
+            if (instanceIds) SDL_free(instanceIds);
+            return false;
+        }
+
+        if (controllerSlot < 0 || controllerSlot >= count)
+        {
+            std::cerr << "Controller slot out of range. slot=" << controllerSlot << " count=" << count << "\n";
+            SDL_free(instanceIds);
+            return false;
+        }
+
+        const SDL_JoystickID instanceId = instanceIds[controllerSlot];
+        SDL_free(instanceIds);
+
+        // Ensure vector can contain this slot
+        if (controllerSlot >= static_cast<int>(m_controllers.size()))
+            m_controllers.resize(controllerSlot + 1);
+
+        m_controllers[controllerSlot] = std::make_unique<Controller>(instanceId);
+
+        if (!m_controllers[controllerSlot] || !m_controllers[controllerSlot]->isOpen())
+        {
+            std::cerr << "Failed to open controller at slot " << controllerSlot << "\n";
+            m_controllers[controllerSlot].reset();
+            return false;
+        }
+
+        return true;
     }
 
-    void InputManager::addKeyboardCommand(SDL_Scancode key, KeyState state, std::unique_ptr<Command> command)
+    void InputManager::addControllerCommand(int controllerSlot, ControllerButton button, KeyState state, std::unique_ptr<Command> command)
     {
-        m_KeyboardCommands.push_back(KeyboardBinding{ key, state, std::move(command) });
+        ControllerBindingKey key{ controllerSlot, button, state };
+        m_controllerBindings[key] = std::move(command);
+    }
+
+    void InputManager::addControllerStickCommand(int controllerSlot, Stick stick, float deadzone, bool normalize, std::unique_ptr<AnalogCommand> command)
+    {
+        StickBinding binding{};
+        binding.controllerSlot = controllerSlot;
+        binding.stick = stick;
+        binding.deadzone = deadzone;
+        binding.normalize = normalize;
+        binding.command = std::move(command);
+
+        m_stickBindings.emplace_back(std::move(binding));
+    }
+
+    void InputManager::updateKeyboardState()
+    {
+        m_previousKeyboardState = m_currentKeyboardState;
+
+        int keyboardCount = 0;
+        const bool* rawKeyboardState = SDL_GetKeyboardState(&keyboardCount);
+        if (keyboardCount <= 0 || !rawKeyboardState)
+            return;
+
+        if (static_cast<int>(m_currentKeyboardState.size()) != keyboardCount)
+        {
+            m_currentKeyboardState.assign(keyboardCount, 0);
+            m_previousKeyboardState.assign(keyboardCount, 0);
+        }
+
+        for (int index = 0; index < keyboardCount; ++index)
+        {
+            m_currentKeyboardState[index] = rawKeyboardState[index] ? 1 : 0;
+        }
+    }
+
+    bool InputManager::isKeyboardDown(SDL_Scancode scanCode) const
+    {
+        const int index = static_cast<int>(scanCode);
+        if (index < 0 || index >= static_cast<int>(m_currentKeyboardState.size()))
+            return false;
+        return m_currentKeyboardState[index] != 0;
+    }
+
+    bool InputManager::isKeyboardPressed(SDL_Scancode scanCode) const
+    {
+        const int index = static_cast<int>(scanCode);
+        if (index < 0 || index >= static_cast<int>(m_currentKeyboardState.size()))
+            return false;
+
+        const bool current = m_currentKeyboardState[index] != 0; 
+        const bool previous = m_previousKeyboardState[index] != 0;
+        return current && !previous;
+    }
+
+    bool InputManager::isKeyboardUp(SDL_Scancode scanCode) const
+    {
+        const int index = static_cast<int>(scanCode);
+        if (index < 0 || index >= static_cast<int>(m_currentKeyboardState.size()))
+            return false;
+
+        const bool current = m_currentKeyboardState[index] != 0;
+        const bool previous = m_previousKeyboardState[index] != 0;
+        return !current && previous;
     }
 }
