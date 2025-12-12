@@ -8,6 +8,7 @@
 #include "BoxColliderComponent.h"
 #include "MoveHorizontalComponent.h" 
 #include "MoveVerticalComponent.h"
+#include "C:\Users\tasta\Desktop\projeto\AGPT_2DGameEngine\Source\Engine\Components\DroneMovementComponent\DroneMovementComponent.h"
 #include "ResourceManager.h"
 #include "Texture2D.h"
 #include "LonerShooterComponent.h"
@@ -58,9 +59,27 @@ namespace Papyrus
     void EnemySpawnerComponent::spawnRandomEnemy()
     {
         const int pick = m_enemyPickDistribution(m_randomEngine);
-        if (pick == 0) spawnLoner();
-        else spawnRusher();
+
+        switch (pick)
+        {
+        case 0:
+            spawnLoner();
+            break;
+
+        case 1:
+            spawnRusher();
+            break;
+
+        case 2:
+            spawnDrone();
+            break;
+
+        default:
+            spawnRusher();
+            break;
+        }
     }
+
 
     void EnemySpawnerComponent::spawnLoner()
     {
@@ -112,4 +131,38 @@ namespace Papyrus
 
         SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }
+
+    void EnemySpawnerComponent::spawnDrone()
+    {
+        constexpr const char* texturePath = "Resources/Textures/drone.bmp";
+        constexpr int columns = 8;
+        constexpr int rows = 2;
+        constexpr int frames = 16;
+        constexpr float framesPerSecond = 8.0f;
+
+        const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
+        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float spawnY = m_spawnYTopPixels - frameSize.y;
+
+        const float verticalSpacing = 40.0f;
+
+        for (int i = 0; i < 5; ++i)
+        {
+            auto enemy = std::make_unique<GameObject>();
+            enemy->setTag("Enemy");
+
+            enemy->m_Transform.position = { spawnX, spawnY - (i * verticalSpacing) };
+
+            enemy->addComponent(std::make_unique<TextureComponent>(texturePath));
+            enemy->addComponent(std::make_unique<AnimationComponent>(columns, rows, frames, framesPerSecond));
+            enemy->addComponent(std::make_unique<PhysicsBodyComponent>());
+            enemy->addComponent(std::make_unique<BoxColliderComponent>());
+            enemy->addComponent(std::make_unique<DroneMovementComponent>());
+
+            SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+        }
+    }
+
+
+
 }

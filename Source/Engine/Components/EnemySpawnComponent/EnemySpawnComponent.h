@@ -22,6 +22,7 @@ namespace Papyrus
         void spawnRandomEnemy();
         void spawnLoner();
         void spawnRusher();
+        void spawnDrone();
 
         float randomFloat(float minValue, float maxValue);
 
@@ -33,7 +34,7 @@ namespace Papyrus
         float m_spawnYTopPixels = -10.0f;
 
         std::mt19937 m_randomEngine;
-        std::uniform_int_distribution<int> m_enemyPickDistribution{ 0, 1 };
+        std::uniform_int_distribution<int> m_enemyPickDistribution{ 0, 2 };
     };
 }
 
