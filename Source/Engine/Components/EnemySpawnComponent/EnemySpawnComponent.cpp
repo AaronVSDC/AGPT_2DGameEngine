@@ -8,7 +8,7 @@
 #include "BoxColliderComponent.h"
 #include "MoveHorizontalComponent.h" 
 #include "MoveVerticalComponent.h"
-#include "C:\Users\tasta\Desktop\projeto\AGPT_2DGameEngine\Source\Engine\Components\DroneMovementComponent\DroneMovementComponent.h"
+#include "DroneMovementComponent.h"
 #include "ResourceManager.h"
 #include "Texture2D.h"
 #include "LonerShooterComponent.h"
