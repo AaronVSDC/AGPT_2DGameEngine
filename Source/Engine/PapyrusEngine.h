@@ -1,4 +1,5 @@
 #include <SDL3/SDL.h>
+#include <functional>
 
 namespace Papyrus
 {
@@ -14,7 +15,7 @@ namespace Papyrus
 		PapyrusEngine& operator=(const PapyrusEngine&&) = delete;
 
 
-		void run(); 
+		void run(const std::function<void()>& load);
 
 	private: 
 		void load(); 
