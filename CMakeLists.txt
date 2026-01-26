@@ -8,7 +8,7 @@ endif()
 
  
  
-project(2DGameEngine LANGUAGES CXX)  
+project(2DGameEngine LANGUAGES C CXX)  
  
 include(FetchContent)  
  
@@ -22,6 +22,16 @@ FetchContent_Declare(
 )
  
 FetchContent_MakeAvailable(box2d) 
+# ----------------------------------------------------------------------------------
+# GLM
+# ----------------------------------------------------------------------------------
+
+FetchContent_Declare(glm
+  GIT_REPOSITORY https://github.com/g-truc/glm.git
+  GIT_TAG 1.0.1
+)
+FetchContent_MakeAvailable(glm)
+
 
 # ----------------------------------------------------------------------------------
 # SDL3
@@ -34,6 +44,21 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SDL3)
 
 # ----------------------------------------------------------------------------------
+# GLAD
+# ----------------------------------------------------------------------------------
+add_library(glad STATIC 3rdParty/glad/src/glad.c )
+target_include_directories(glad PUBLIC 3rdParty/glad/include)
+ 
+
+# ----------------------------------------------------------------------------------
+# stb_image
+# ----------------------------------------------------------------------------------
+add_library(stb_image STATIC 3rdParty/stb_image/stb_image.cpp)
+target_include_directories(stb_image PUBLIC 3rdParty/stb_image)
+
+
+
+# ----------------------------------------------------------------------------------
 # include all files needed over here (.cpp files or .h files if there are no .cpp )
 # ----------------------------------------------------------------------------------
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
@@ -41,7 +66,7 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h" 
 )
 
-add_executable (2DGameEngine ${SOURCES} "Source/Engine/Components/EnemyBulletComponent/EnemyBulletComponent.cpp" "Source/Engine/Components/MoveHorizontalComponent/MoveHorizontalComponent.h")
+add_executable (2DGameEngine ${SOURCES} )
 
 
 # ----------------------------------------------------------------------------------
@@ -67,6 +92,9 @@ target_include_directories(2DGameEngine
 target_link_libraries(2DGameEngine PRIVATE
     box2d
     SDL3::SDL3
+    glad 
+    stb_image 
+    glm::glm-header-only
 )
 
 #Copy SDL3.dll next to the executable after build

@@ -144,7 +144,7 @@ namespace Papyrus
             overlapBeginEvent.secondGameObject = secondGameObject;
 
             m_overlapBeginEventsThisStep.push_back(overlapBeginEvent);
-        }
+        } 
     }
 
     std::vector<OverlapBeginEvent> PhysicsManager::consumeOverlapBeginEvents()

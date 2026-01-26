@@ -1,31 +1,33 @@
 #ifndef TEXTURE2D_H
 #define TEXTURE2D_H
 #include <string>
-#include <box2d\math_functions.h>
+#include <box2d/math_functions.h>
+#include <glad/glad.h>
 
-struct SDL_Texture;
 namespace Papyrus
 {
-	/**
-	 * Simple RAII wrapper for an SDL_Texture
-	 */
-	class Texture2D final
-	{
-	public:
-		SDL_Texture* getSDLTexture() const;
-		explicit Texture2D(SDL_Texture* texture);
-		explicit Texture2D(const std::string& fullPath);
-		~Texture2D();
+    class Texture2D final
+    {
+    public:
+        explicit Texture2D(const std::string& fullPath);
+        ~Texture2D();
 
-		b2Vec2 getSize() const;
-		SDL_Texture* getHandle() const { return m_texture;  } 
+        Texture2D(const Texture2D&) = delete;
+        Texture2D& operator=(const Texture2D&) = delete;
+        Texture2D(Texture2D&&) = delete;
+        Texture2D& operator=(Texture2D&&) = delete;
 
-		Texture2D(const Texture2D&) = delete;
-		Texture2D(Texture2D&&) = delete;
-		Texture2D& operator= (const Texture2D&) = delete;
-		Texture2D& operator= (const Texture2D&&) = delete;
-	private:
-		SDL_Texture* m_texture;
-	};
+        GLuint getGLTexture() const { return m_TextureId; }
+        b2Vec2 getSize() const { return { (float)m_Width, (float)m_Height }; }
+
+        int width() const { return m_Width; }
+        int height() const { return m_Height; }
+
+    private:
+        GLuint m_TextureId = 0;
+        int m_Width = 0;
+        int m_Height = 0;
+    };
 }
+
 #endif

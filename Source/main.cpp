@@ -3,9 +3,15 @@
 
 int main()
 {
-	Papyrus::PapyrusEngine engine{}; 
+	Papyrus::PapyrusEngine engine{};
 
-	engine.run();
-
+	try
+	{
+		engine.run();
+	}
+	catch (std::exception& e)
+	{
+		std::cout << "RUNTIME ERROR: " << e.what() << std::endl; 
+	}
 	return 0;
 }

@@ -1,35 +1,31 @@
 #ifndef WINDOW_H
 #define WINDOW_H
-
 #include <SDL3/SDL.h>
-
-//std
-#include <string> 
-#include <memory>
-
+#include <string>
+#include <memory> 
 namespace Papyrus
 {
+    class Window final
+    {
+    public:
+        Window(const std::string& title, int width, int height);
+        ~Window();
 
-	class Window final
-	{
-	public:
-		Window(const std::string& title, int width, int height);
-		~Window();
-		SDL_Window* getHandle() const { return m_SDLWindow; }
+        SDL_Window* getHandle() const { return m_Window; }
+        int getWidth()  const { return m_Width; }
+        int getHeight() const { return m_Height; }
 
-		const int getHeight() const { return m_HEIGHT; }
-		const int getWidht() const { return m_WIDTH; }
+        // TODO: call this from your SDL event loop when a resize happens:
+        void setSize(int w, int h) { m_Width = w; m_Height = h; } 
 
-	private:
-		SDL_Window* m_SDLWindow = { nullptr };  
+    private:
+        SDL_Window* m_Window = nullptr;
+        SDL_GLContext m_GLContext = nullptr;
+        int m_Width = 0;
+        int m_Height = 0;
+    };
 
-		const int m_WIDTH = 800;
-		const int m_HEIGHT = 600;
-	};
-
-	extern std::unique_ptr<Window> GWindow;
-
-
+    extern std::unique_ptr<Window> GWindow; 
 
 }
 

@@ -135,7 +135,7 @@ namespace Papyrus
 		playerShip->setTag("Player");
 
 		auto enemySpawner = std::make_unique<GameObject>(); 
-		enemySpawner->addComponent(std::make_unique<EnemySpawnerComponent>(3.f,GWindow->getWidht()));  
+		enemySpawner->addComponent(std::make_unique<EnemySpawnerComponent>(3.f,GWindow->getWidth()));  
 
 		input.addController(0);
 
