@@ -2,93 +2,77 @@
 #include <SDL3/SDL.h>
 #include <stdexcept>
 #include <iostream>
-
+#include <vector>
 namespace Papyrus
 {
 #include <SDL3/SDL.h>
 
-    static void ApplyPinkToAlpha(SDL_Surface* s)
+    static void PinkToAlpha_RGBA(uint8_t* rgba, int w, int h)
     {
-        if (!s) return;
-
-        // Lock if needed (safe for all surfaces)
-        if (SDL_MUSTLOCK(s)) {
-            if (SDL_LockSurface(s) != 0) {
-                return;
-            }
-        }
-
-        Uint8* bytes = static_cast<Uint8*>(s->pixels);
-        const int pitch = s->pitch;
-
-        // We assume 4 bytes/pixel (RGBA8888) because we converted to that format.
-        for (int y = 0; y < s->h; ++y)
+        for (int i = 0; i < w * h; ++i)
         {
-            Uint8* row = bytes + y * pitch;
-            for (int x = 0; x < s->w; ++x)
-            {
-                Uint8* p = row + x * 4; // RGBA
-                const Uint8 r = p[0];
-                const Uint8 g = p[1];
-                const Uint8 b = p[2];
-
-                p[3] = (r == 255 && g == 0 && b == 255) ? 0 : 255;
-            }
+            uint8_t* p = rgba + i * 4; // RGBA
+            if (p[0] == 255 && p[1] == 0 && p[2] == 255)
+                p[3] = 0;
+            else
+                p[3] = 255;
         }
-
-        if (SDL_MUSTLOCK(s)) SDL_UnlockSurface(s);
     }
-
 
     Texture2D::Texture2D(const std::string& fullPath)
     {
         SDL_Surface* loaded = SDL_LoadBMP(fullPath.c_str());
-        if (!loaded)
-            throw std::runtime_error(std::string("SDL_LoadBMP failed: ") + SDL_GetError());
+        if (!loaded) throw std::runtime_error(SDL_GetError());
 
-        // Convert to RGBA8888 for predictable upload format
-        SDL_Surface* surf = SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA8888);
+        // IMPORTANT: RGBA32 = “byte array RGBA” convention per platform. :contentReference[oaicite:1]{index=1}
+        SDL_Surface* surf = SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32);
         SDL_DestroySurface(loaded);
-
-        if (!surf)
-            throw std::runtime_error(std::string("SDL_ConvertSurfaceFormat failed: ") + SDL_GetError());
+        if (!surf) throw std::runtime_error(SDL_GetError()); 
 
         m_Width = surf->w;
         m_Height = surf->h;
 
-        ApplyPinkToAlpha(surf);
+        // Lock surface if needed
+        if (SDL_MUSTLOCK(surf)) {
+            if (SDL_LockSurface(surf) != 0) {
+                SDL_DestroySurface(surf);
+                throw std::runtime_error(SDL_GetError());
+            }
+        }
 
+        // Pack rows to tight RGBA (handles pitch safely)
+        std::vector<uint8_t> packed(m_Width * m_Height * 4);
+        const uint8_t* src = static_cast<const uint8_t*>(surf->pixels);
+
+        for (int y = 0; y < m_Height; ++y)
+        {
+            const uint8_t* rowSrc = src + y * surf->pitch;
+            uint8_t* rowDst = packed.data() + y * (m_Width * 4);
+            std::memcpy(rowDst, rowSrc, (size_t)m_Width * 4);
+        }
+
+        if (SDL_MUSTLOCK(surf)) SDL_UnlockSurface(surf);
+        SDL_DestroySurface(surf);
+
+        // Apply your pink color key => alpha, now on tightly packed RGBA bytes
+        PinkToAlpha_RGBA(packed.data(), m_Width, m_Height);
+
+        // Upload to GL as RGBA 
         glGenTextures(1, &m_TextureId);
         glBindTexture(GL_TEXTURE_2D, m_TextureId);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // packed RGBA has no padding issues
 
-        // Upload pixels to GPU
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGBA8,
-            m_Width,
-            m_Height,
-            0,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            surf->pixels
-        );
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, packed.data());
 
         glBindTexture(GL_TEXTURE_2D, 0);
-        SDL_DestroySurface(surf);
-
-        if (m_TextureId == 0)
-            throw std::runtime_error("OpenGL texture creation failed");
     }
-
     Texture2D::~Texture2D()
     {
         if (m_TextureId)
