@@ -54,7 +54,7 @@ void load()
 	);
 
 	playerShip->addComponent(
-		std::make_unique<xc::PlayerAnimationComponent>( 
+		std::make_unique<Papyrus::PlayerAnimationComponent>(
 			7,
 			12.0f
 		)
@@ -62,7 +62,7 @@ void load()
 
 	// Movement
 	playerShip->addComponent(
-		std::make_unique<xc::MoveComponent>(
+		std::make_unique<Papyrus::MoveComponent>(
 			400.0f,
 			1600.0f,
 			2000.0f

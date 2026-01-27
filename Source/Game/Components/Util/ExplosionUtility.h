@@ -3,12 +3,16 @@
 
 #include <string>
 
+namespace Papyrus
+{
+    class GameObject;
+}
+
+
 namespace xc
 {
-    class Papyrus::GameObject;
-
     void explodeAndDie(
-        Papyrus::GameObject* target, 
+        Papyrus::GameObject* target,  
         const std::string& explosionTexturePath,
         int columns,
         int rows,

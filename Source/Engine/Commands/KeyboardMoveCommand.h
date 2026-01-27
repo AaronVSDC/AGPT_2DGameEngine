@@ -35,7 +35,7 @@ namespace Papyrus
     class MoveDownCommand final : public Command
     {
     public:
-        explicit MoveDownCommand(GameObject* gameObject)
+        explicit MoveDownCommand(GameObject* gameObject) 
             : m_gameObject(gameObject) {}
 
         void execute() override
@@ -132,12 +132,12 @@ namespace Papyrus
 
 
             bullet->addComponent(
-                std::make_unique<BulletComponent>(800.0f) // speed (px/s)
+                std::make_unique<xc::BulletComponent>(800.0f) // speed (px/s)
             );
             bullet->start();
             bullet->onEnable();
 
-            SceneManager::getInstance()
+            SceneManager::getInstance() 
                 .getCurrentScene()  
                 ->add(std::move(bullet));
 

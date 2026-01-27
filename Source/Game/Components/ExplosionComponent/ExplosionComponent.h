@@ -3,9 +3,13 @@
 
 #include "BaseComponent.h"
 
+namespace Papyrus
+{
+    class TextureComponent; 
+}
 namespace xc
 {
-    class Papyrus::TextureComponent;
+
 
     class ExplosionComponent final : public Papyrus::BaseComponent
     {
