@@ -212,7 +212,7 @@ namespace xc
 
         const AsteroidData asteroids[3] =
         {   //columns, rows, frames, fps 
-            { "Resources/Textures/MetalAesteroid1.bmp", 5, 5, 25, 8.0f },
+            { "Resources/Textures/MetalAesteroid.bmp", 5, 5, 25, 8.0f },
             { "Resources/Textures/MetalAesteroid2.bmp", 8, 3, 24, 8.0f },
             { "Resources/Textures/MetalAesteroid3.bmp", 8, 2, 16, 8.0f }
         };

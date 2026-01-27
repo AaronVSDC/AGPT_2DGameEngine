@@ -24,6 +24,8 @@ namespace xc
         auto* owner = getOwner();
         if (!owner) return;
 
+        owner->markForRemoval();
+
         AsteroidSize nextSize;
         std::string nextTexture;
         int columns, rows, frames;
@@ -75,10 +77,7 @@ namespace xc
 
             if (nextSize != AsteroidSize::Small)
             {
-                asteroid->addComponent(std::make_unique<AsteroidSplittingComponent>(
-                    nextSize,
-                    "Resources/Textures/Asteroid3.bmp"
-                ));
+                asteroid->addComponent(std::make_unique<AsteroidSplittingComponent>(nextSize,"Resources/Textures/Asteroid3.bmp"));
             }
 
             Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(asteroid));
