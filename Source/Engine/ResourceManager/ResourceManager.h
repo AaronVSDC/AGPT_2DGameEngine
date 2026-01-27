@@ -7,9 +7,11 @@
 #include <map>
 #include "Singleton.h"
 #include "Texture2D.h"
+#include "PapyrusAPI.h"
+
 namespace Papyrus
 {
-	class ResourceManager final : public Singleton<ResourceManager>
+	class PAPYRUS_API ResourceManager final : public Singleton<ResourceManager>
 	{
 	public:
 		void init(const std::filesystem::path& data);

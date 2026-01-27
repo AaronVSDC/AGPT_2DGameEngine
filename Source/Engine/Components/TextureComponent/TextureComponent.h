@@ -3,11 +3,12 @@
 #include <string>
 #include <box2d\math_functions.h>
 #include "BaseComponent.h"
+#include "PapyrusAPI.h"
 
 namespace Papyrus
-{
+{ 
 	class Texture2D;
-	class TextureComponent final : public Papyrus::BaseComponent
+	class PAPYRUS_API TextureComponent final : public Papyrus::BaseComponent
 	{
 	public:
 		TextureComponent(const std::string& fileName);

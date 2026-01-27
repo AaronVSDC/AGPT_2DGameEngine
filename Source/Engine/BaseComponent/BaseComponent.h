@@ -1,11 +1,11 @@
 #ifndef BASE_COMPONENT_H
 #define BASE_COMPONENT_H
 #include <cassert>
- 
+#include "PapyrusAPI.h"
 namespace Papyrus
 {
 	class GameObject;
-	class BaseComponent
+	class PAPYRUS_API BaseComponent 
 	{
 		friend class GameObject;
 	public:

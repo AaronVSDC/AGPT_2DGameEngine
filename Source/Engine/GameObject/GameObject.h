@@ -5,12 +5,13 @@
 #include <vector>
 #include "BaseComponent.h"
 #include "Transform.h"
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
 	class Texture2D;
 
-	class GameObject final
+	class PAPYRUS_API GameObject final   
 	{
 	public:
 		GameObject() = default;

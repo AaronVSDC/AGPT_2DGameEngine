@@ -3,10 +3,11 @@
 #include <string>
 #include <box2d/math_functions.h>
 #include <glad/glad.h>
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
-    class Texture2D final
+    class PAPYRUS_API Texture2D final 
     {
     public:
         explicit Texture2D(const std::string& fullPath);

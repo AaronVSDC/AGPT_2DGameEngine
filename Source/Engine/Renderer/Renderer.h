@@ -5,12 +5,14 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "PapyrusAPI.h"
+
 
 namespace Papyrus
 {
     class Texture2D;
 
-    class Renderer final : public Singleton<Renderer>
+    class PAPYRUS_API Renderer final : public Singleton<Renderer>
     {
     public:
         Renderer();

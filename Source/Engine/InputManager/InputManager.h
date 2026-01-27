@@ -10,12 +10,13 @@
 #include "Singleton.h"
 #include "Controller.h"
 #include "Command.h"
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
     class AnalogCommand; // you already have this
 
-    class InputManager final : public Singleton<InputManager>
+    class PAPYRUS_API InputManager final : public Singleton<InputManager> 
     {
     public:
         InputManager();

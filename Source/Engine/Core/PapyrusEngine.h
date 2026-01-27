@@ -5,7 +5,7 @@
 
 namespace Papyrus
 {
-
+	 
 	class PAPYRUS_API PapyrusEngine final
 	{
 	public: 

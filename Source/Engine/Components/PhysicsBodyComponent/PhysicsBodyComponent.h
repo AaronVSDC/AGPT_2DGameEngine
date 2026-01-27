@@ -3,6 +3,7 @@
 
 #include <box2d/box2d.h>
 #include "BaseComponent.h"
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
@@ -12,7 +13,7 @@ namespace Papyrus
         Kinematic   // follows Transform  
     };
 
-    class PhysicsBodyComponent final : public BaseComponent
+    class PAPYRUS_API PhysicsBodyComponent final : public BaseComponent 
     {
     public:
         explicit PhysicsBodyComponent(PhysicsBodyType bodyType = PhysicsBodyType::Kinematic);

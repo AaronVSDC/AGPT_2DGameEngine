@@ -3,13 +3,14 @@
 
 #include "BaseComponent.h"
 #include <SDL3/SDL_rect.h>
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
     class TextureComponent;
     class MoveComponent;
 
-    class PlayerAnimationComponent final : public Papyrus::BaseComponent
+    class PAPYRUS_API PlayerAnimationComponent final : public Papyrus::BaseComponent
     {
     public:
         PlayerAnimationComponent(

@@ -3,10 +3,11 @@
 
 #include "BaseComponent.h"
 #include <box2d/math_functions.h>
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
-    class MoveComponent final : public Papyrus::BaseComponent
+    class PAPYRUS_API MoveComponent final : public Papyrus::BaseComponent
     {
     public:
         MoveComponent(

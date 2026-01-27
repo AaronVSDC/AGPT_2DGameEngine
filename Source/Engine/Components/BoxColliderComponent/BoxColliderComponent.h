@@ -1,10 +1,10 @@
 #pragma once
 #include <box2d/box2d.h>
 #include "BaseComponent.h"
-
+#include "PapyrusAPI.h"
 namespace Papyrus
 {
-    class BoxColliderComponent final : public BaseComponent
+    class PAPYRUS_API BoxColliderComponent final : public BaseComponent
     {
     public: 
         explicit BoxColliderComponent(bool isTrigger = true) : m_isTrigger(isTrigger) {}

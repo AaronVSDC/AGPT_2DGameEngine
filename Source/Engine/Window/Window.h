@@ -4,9 +4,11 @@
 #include <string>
 #include <memory>  
 #include "Singleton.h"
+#include "PapyrusAPI.h"
+
 namespace Papyrus
 {
-    class Window final : public Singleton<Window>
+    class PAPYRUS_API Window final : public Singleton<Window>
     {
     public:
         Window();

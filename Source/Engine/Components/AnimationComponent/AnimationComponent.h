@@ -3,13 +3,14 @@
 
 #include "BaseComponent.h"
 #include <SDL3/SDL_rect.h>
+#include "PapyrusAPI.h"
 
 //namespace XenonClone
 namespace Papyrus
 {
     class TextureComponent;
 
-    class AnimationComponent final : public BaseComponent
+    class PAPYRUS_API AnimationComponent final : public BaseComponent
     {
     public:
         AnimationComponent(

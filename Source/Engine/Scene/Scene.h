@@ -5,11 +5,12 @@
 #include <vector>
 
 #include "GameObject.h"
+#include "PapyrusAPI.h"
 
 namespace Papyrus
 {
 	class SceneManager;
-	class Scene final
+	class PAPYRUS_API Scene final
 	{
 		friend class SceneManager;
 	public:

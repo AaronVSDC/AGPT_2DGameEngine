@@ -6,9 +6,11 @@
 #include <memory>
 #include "Singleton.h"
 #include "Scene.h"
+#include "PapyrusAPI.h"
+
 namespace Papyrus 
 {
-	class SceneManager final : public Singleton<SceneManager>
+	class PAPYRUS_API SceneManager final : public Singleton<SceneManager>
 	{
 	public:
 		Scene* createScene(const std::string& name);
