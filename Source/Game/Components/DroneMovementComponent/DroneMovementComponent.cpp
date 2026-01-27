@@ -1,10 +1,15 @@
 #include "DroneMovementComponent.h"
 #include "GameObject.h"
+#include <cmath>
 
 namespace xc
 {
-    DroneMovementComponent::DroneMovementComponent()
+    DroneMovementComponent::DroneMovementComponent(float horizontalAmplitude, float verticalSpeed, float phase)
+        : m_horizontalAmplitude(horizontalAmplitude)
+        , m_verticalSpeed(verticalSpeed)
+        , m_phase(phase)
     {
+        m_frequency = 1.0f;  // slower wave
     }
 
     void DroneMovementComponent::update(float deltaTime)
@@ -16,19 +21,13 @@ namespace xc
 
         if (!m_initialized)
         {
-            m_originX = pos.x;
+            m_startX = pos.x;
+            m_startY = pos.y;
             m_initialized = true;
         }
 
-        pos.x += m_direction * m_horizontalSpeed * deltaTime;
+        pos.y += m_verticalSpeed * deltaTime; 
 
-        if (pos.x > m_originX + m_range)
-            m_direction = -1;    // go left
-        else if (pos.x < m_originX - m_range)
-            m_direction = 1;     // go right
-
-        pos.y += m_verticalSpeed * deltaTime;
+        pos.x = m_startX + m_horizontalAmplitude * std::sin((pos.y + m_phase) * 0.02f * m_frequency);
     }
-
-
 }

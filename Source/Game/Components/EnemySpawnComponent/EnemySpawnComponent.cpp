@@ -22,7 +22,7 @@ namespace xc
     {
         auto* texture = Papyrus::ResourceManager::getInstance().loadTexture(texturePath);
         if (!texture) return { 0.0f, 0.0f };
-         
+
         const b2Vec2 sheetSize = texture->getSize();
         if (columns <= 0 || rows <= 0) return { sheetSize.x, sheetSize.y };
 
@@ -32,7 +32,7 @@ namespace xc
     EnemySpawnerComponent::EnemySpawnerComponent(float spawnIntervalSeconds, float screenWidthPixels, float spawnYTopPixels)
         : m_spawnIntervalSeconds(spawnIntervalSeconds)
         , m_screenWidthPixels(screenWidthPixels)
-        , m_spawnYTopPixels(spawnYTopPixels) 
+        , m_spawnYTopPixels(spawnYTopPixels)
         , m_randomEngine(std::random_device{}())
     {
     }
@@ -99,7 +99,7 @@ namespace xc
 
         const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
         const float spawnX = -frameSize.x;
-        const float spawnY = randomFloat(frameSize.y , 100.f);
+        const float spawnY = randomFloat(frameSize.y, 100.f);
 
         auto enemy = std::make_unique<Papyrus::GameObject>();
         enemy->setTag("Enemy");
@@ -135,7 +135,7 @@ namespace xc
         enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
         enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
         enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
-        enemy->addComponent(std::make_unique<MoveVerticalComponent>()); 
+        enemy->addComponent(std::make_unique<MoveVerticalComponent>());
 
         Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }
@@ -149,27 +149,34 @@ namespace xc
         constexpr float framesPerSecond = 8.0f;
 
         const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
-        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
-        const float spawnY = m_spawnYTopPixels - frameSize.y;
 
+        const float baseX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float baseY = m_spawnYTopPixels - frameSize.y;
+
+        const int droneCount = 5;
         const float verticalSpacing = 40.0f;
 
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < droneCount; ++i)
         {
             auto enemy = std::make_unique<Papyrus::GameObject>();
             enemy->setTag("Enemy");
 
-            enemy->m_Transform.position = { spawnX, spawnY - (i * verticalSpacing) };
+            float spawnY = baseY - i * verticalSpacing;
+
+            enemy->m_Transform.position = { baseX, spawnY };
 
             enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
             enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
             enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
             enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
-            enemy->addComponent(std::make_unique<DroneMovementComponent>());
+
+            float phase = i * 20.0f;
+            enemy->addComponent(std::make_unique<DroneMovementComponent>(50.0f, 50.0f, phase));
 
             Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
         }
     }
+
     void EnemySpawnerComponent::spawnAesteroid()
     {
         constexpr const char* texturePath = "Resources/Textures/Aesteroid.bmp";
@@ -179,7 +186,7 @@ namespace xc
         constexpr float framesPerSecond = 8.0f;
 
         const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
-        const float spawnX = randomFloat(0.0f,std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
         auto enemy = std::make_unique<Papyrus::GameObject>();
@@ -194,7 +201,7 @@ namespace xc
         enemy->addComponent(std::make_unique<MoveVerticalComponent>());
 
         //Split
-        enemy->addComponent(std::make_unique<AsteroidSplittingComponent>(AsteroidSize::Large,"Resources/Textures/Asteroid2.bmp"));
+        enemy->addComponent(std::make_unique<AsteroidSplittingComponent>(AsteroidSize::Large, "Resources/Textures/Asteroid2.bmp"));
 
         Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }

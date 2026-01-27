@@ -1,27 +1,23 @@
-#ifndef DRONE_MOVEMENT_COMPONENT_H
-#define DRONE_MOVEMENT_COMPONENT_H
-
+#pragma once
 #include "BaseComponent.h"
-#include <string>
 
 namespace xc
 {
     class DroneMovementComponent : public Papyrus::BaseComponent
     {
     public:
-        DroneMovementComponent();
+        DroneMovementComponent(float horizontalAmplitude = 50.0f, float verticalSpeed = 50.0f, float phase = 0.0f);
 
         void update(float deltaTime) override;
-        float m_horizontalSpeed = 50.f;
-        float m_verticalSpeed = 90.f;
-        float m_range = 40.f;
-        int m_direction = 1;
-        float m_originX = 0.f;
-        bool m_initialized = false;
 
     private:
+        bool m_initialized = false;
+        float m_startY = 0.0f;
+        float m_startX = 0.0f;
 
+        float m_horizontalAmplitude = 40.0f; // <--Horizontal amplitude of the drones flight
+        float m_verticalSpeed = 50.0f;       
+        float m_phase = 0.0f;                
+        float m_frequency = 2.0f;            
     };
 }
-
-#endif
