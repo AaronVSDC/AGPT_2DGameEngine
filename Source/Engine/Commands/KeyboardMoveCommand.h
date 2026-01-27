@@ -8,6 +8,7 @@
 #include "AnimationComponent.h"
 #include "PhysicsBodyComponent.h"
 #include "BoxColliderComponent.h"
+#include "SceneManager.h"
 
 namespace Papyrus
 {
