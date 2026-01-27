@@ -5,6 +5,10 @@
 
 namespace Papyrus
 { 
+    SDL_Window* Window::m_Window = nullptr;
+    SDL_GLContext Window::m_GLContext = nullptr;
+    int Window::m_Width = 0;
+    int Window::m_Height = 0;
 
     Window::Window() = default; 
 
