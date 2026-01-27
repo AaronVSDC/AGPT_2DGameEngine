@@ -201,13 +201,27 @@ namespace xc
 
     void EnemySpawnerComponent::spawnMetalAesteroid()
     {
-        constexpr const char* texturePath = "Resources/Textures/MetalAesteroid.bmp";
-        constexpr int columns = 5;
-        constexpr int rows = 5;
-        constexpr int frames = 25;
-        constexpr float framesPerSecond = 8.0f;
+        struct AsteroidData
+        {
+            const char* texturePath;
+            int columns;
+            int rows;
+            int frames;
+            float framesPerSecond;
+        };
 
-        const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
+        const AsteroidData asteroids[3] =
+        {   //columns, rows, frames, fps 
+            { "Resources/Textures/MetalAesteroid1.bmp", 5, 5, 25, 8.0f },
+            { "Resources/Textures/MetalAesteroid2.bmp", 8, 3, 24, 8.0f },
+            { "Resources/Textures/MetalAesteroid3.bmp", 8, 2, 16, 8.0f }
+        };
+
+        // Pick a random asteroid
+        std::uniform_int_distribution<int> dist(0, 2);
+        const AsteroidData& choice = asteroids[dist(m_randomEngine)];
+
+        const b2Vec2 frameSize = getFrameSizePixels(choice.texturePath, choice.columns, choice.rows);
         const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
@@ -215,14 +229,15 @@ namespace xc
         enemy->setTag("Indestructible");
         enemy->m_Transform.position = { spawnX, spawnY };
 
-        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
-        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(choice.texturePath));
+        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(choice.columns, choice.rows, choice.frames, choice.framesPerSecond));
         enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
         enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
         enemy->addComponent(std::make_unique<MoveVerticalComponent>());
 
         Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }
+
 
 
 }
