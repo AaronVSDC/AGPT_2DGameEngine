@@ -36,7 +36,7 @@ namespace xc
         float m_spawnYTopPixels = -10.0f;
 
         std::mt19937 m_randomEngine;
-        std::uniform_int_distribution<int> m_enemyPickDistribution{ 0, 2 };
+        std::uniform_int_distribution<int> m_enemyPickDistribution{ 0, 4 };
     };
 }
 
