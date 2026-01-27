@@ -5,7 +5,7 @@ include(FetchContent)
 
 # -----------------------------
 # Dependencies
-# -----------------------------
+# ----------------------------- 
 FetchContent_Declare(
   box2d
   GIT_REPOSITORY https://github.com/erincatto/box2d.git
@@ -66,9 +66,9 @@ target_link_libraries(PapyrusEngine
   PUBLIC
     box2d
     SDL3::SDL3
-    glm::glm-header-only
+    glm::glm-header-only 
     glad
-    stb_image
+    stb_image 
 )
 
 # -----------------------------

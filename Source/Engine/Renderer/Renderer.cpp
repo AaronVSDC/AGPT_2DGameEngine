@@ -210,14 +210,8 @@ namespace Papyrus
         const float sw = srcPixels.w;
         const float sh = srcPixels.h;
 
-        // Scale is straightforward
-        glm::vec2 uvScale(sw / Tw, sh / Th);
-
-        // Y flip:
-        // SDL source rect is top-left origin in pixel space.
-        // OpenGL UV assumes (0,0) at bottom-left for sampling.
-        // So we flip Y:
-        glm::vec2 uvOffset(sx / Tw, 1.0f - (sy + sh) / Th);
+        glm::vec2 uvOffset(sx / Tw, sy / Th);   // no flip
+        glm::vec2 uvScale(sw / Tw, sh / Th); 
 
         glUseProgram(m_Program);
         glUniformMatrix4fv(m_uMVP, 1, GL_FALSE, &MVP[0][0]);
@@ -228,7 +222,7 @@ namespace Papyrus
         glBindTexture(GL_TEXTURE_2D, tex.getGLTexture());
 
         glBindVertexArray(m_VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 6); 
         glBindVertexArray(0);
 
         glBindTexture(GL_TEXTURE_2D, 0);

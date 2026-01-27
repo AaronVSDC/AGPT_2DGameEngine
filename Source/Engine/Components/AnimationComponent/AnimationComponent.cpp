@@ -32,6 +32,8 @@ namespace Papyrus
         // Automatic frame size
         m_frameWidthPixels = static_cast<int>(textureSize.x / static_cast<float>(m_columns));
         m_frameHeightPixels = static_cast<int>(textureSize.y / static_cast<float>(m_rows));
+
+
     }
 
     void AnimationComponent::update(float deltaTime)
