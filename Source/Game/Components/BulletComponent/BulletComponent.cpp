@@ -28,6 +28,11 @@ namespace xc
     {
 
         if (!other) return;
+        if (other->getTag() == "Indestructible")
+        {
+            getOwner()->markForRemoval();
+            return;
+        }
         if (other->getTag() != "Enemy") return;
 
         getOwner()->markForRemoval();
