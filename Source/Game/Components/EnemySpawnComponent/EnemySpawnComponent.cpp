@@ -12,6 +12,7 @@
 #include "ResourceManager.h"
 #include "Texture2D.h"
 #include "LonerShooterComponent.h"
+#include "AsteroidSplittingComponent.h"
 
 #include <algorithm>
 
@@ -178,11 +179,12 @@ namespace xc
         constexpr float framesPerSecond = 8.0f;
 
         const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
-        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float spawnX = randomFloat(0.0f,std::max(0.0f, m_screenWidthPixels - frameSize.x));
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
         auto enemy = std::make_unique<Papyrus::GameObject>();
         enemy->setTag("Enemy");
+
         enemy->m_Transform.position = { spawnX, spawnY };
 
         enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
@@ -190,6 +192,9 @@ namespace xc
         enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
         enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
         enemy->addComponent(std::make_unique<MoveVerticalComponent>());
+
+        //Split
+        enemy->addComponent(std::make_unique<AsteroidSplittingComponent>(AsteroidSize::Large,"Resources/Textures/Asteroid2.bmp"));
 
         Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }

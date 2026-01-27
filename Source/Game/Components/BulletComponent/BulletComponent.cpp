@@ -5,6 +5,8 @@
 #include "ExplosionComponent.h"
 #include <iostream> 
 #include "BoxColliderComponent.h"
+#include "AsteroidSplittingComponent.h"
+
 
 namespace xc
 {
@@ -34,6 +36,13 @@ namespace xc
             return;
         }
         if (other->getTag() != "Enemy") return;
+
+        //Asteroid Split
+        auto* split = other->getComponent<AsteroidSplittingComponent>();
+        if (split)
+        {
+            split->split();
+        }
 
         getOwner()->markForRemoval();
 
