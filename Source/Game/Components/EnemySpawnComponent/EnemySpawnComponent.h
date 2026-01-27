@@ -23,6 +23,8 @@ namespace xc
         void spawnLoner();
         void spawnRusher();
         void spawnDrone();
+        void spawnAesteroid();
+        void spawnMetalAesteroid();
 
         float randomFloat(float minValue, float maxValue);
 

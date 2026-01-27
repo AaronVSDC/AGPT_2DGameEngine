@@ -73,6 +73,13 @@ namespace xc
         case 2:
             spawnDrone();
             break;
+        case 3:
+            spawnAesteroid();
+            break;
+
+        case 4:
+            spawnMetalAesteroid();
+            break;
 
         default:
             spawnRusher();
@@ -162,7 +169,55 @@ namespace xc
             Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
         }
     }
+    void EnemySpawnerComponent::spawnAesteroid()
+    {
+        constexpr const char* texturePath = "Resources/Textures/Aesteroid.bmp";
+        constexpr int columns = 5;
+        constexpr int rows = 5;
+        constexpr int frames = 25;
+        constexpr float framesPerSecond = 8.0f;
 
+        const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
+        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float spawnY = m_spawnYTopPixels - frameSize.y;
+
+        auto enemy = std::make_unique<Papyrus::GameObject>();
+        enemy->setTag("Enemy");
+        enemy->m_Transform.position = { spawnX, spawnY };
+
+        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
+        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+        enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
+        enemy->addComponent(std::make_unique<MoveVerticalComponent>());
+
+        Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+    }
+
+    void EnemySpawnerComponent::spawnMetalAesteroid()
+    {
+        constexpr const char* texturePath = "Resources/Textures/MetalAesteroid.bmp";
+        constexpr int columns = 5;
+        constexpr int rows = 5;
+        constexpr int frames = 25;
+        constexpr float framesPerSecond = 8.0f;
+
+        const b2Vec2 frameSize = getFrameSizePixels(texturePath, columns, rows);
+        const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
+        const float spawnY = m_spawnYTopPixels - frameSize.y;
+
+        auto enemy = std::make_unique<Papyrus::GameObject>();
+        enemy->setTag("Indestructible");
+        enemy->m_Transform.position = { spawnX, spawnY };
+
+        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
+        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+        enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
+        enemy->addComponent(std::make_unique<MoveVerticalComponent>());
+
+        Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+    }
 
 
 }
