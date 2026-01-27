@@ -7,7 +7,7 @@
 namespace Papyrus
 {
 	class Texture2D;
-	class TextureComponent final : public BaseComponent
+	class TextureComponent final : public Papyrus::BaseComponent
 	{
 	public:
 		TextureComponent(const std::string& fileName);
@@ -19,12 +19,12 @@ namespace Papyrus
 		void render() const override;
 
 		b2Vec2 getSize() const;
-		Texture2D* getTexture() const { return m_pTexture; }
+		Papyrus::Texture2D* getTexture() const { return m_pTexture; }
 		void setTexture(const std::string& fileName);
 
 	private:
-
-		Texture2D* m_pTexture;
+		 
+		Papyrus::Texture2D* m_pTexture;
 		std::string m_FileName;
 
 	};

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace xc
+namespace Papyrus
 {
     MoveComponent::MoveComponent(
         float maxSpeedPixelsPerSecond,
@@ -54,7 +54,7 @@ namespace xc
         }
 
         // --- Integrate position ---
-        GameObject* owner = getOwner();
+        Papyrus::GameObject* owner = getOwner();
         owner->m_Transform.position += m_velocity * deltaTime;
     }
 }

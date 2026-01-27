@@ -8,10 +8,10 @@
 #include "ExplosionComponent.h"
 #include "BoxColliderComponent.h"
 
-namespace Papyrus
+namespace xc
 {
     void explodeAndDie(
-        GameObject* target,
+        Papyrus::GameObject* target, 
         const std::string& explosionTexturePath,
         int columns,
         int rows,
@@ -22,27 +22,27 @@ namespace Papyrus
         if (!target) return;
 
         // Stop normal visuals / movement
-        if (auto* playerAnim = target->getComponent<PlayerAnimationComponent>())
+        if (auto* playerAnim = target->getComponent<Papyrus::PlayerAnimationComponent>())
             playerAnim->m_Enabled = false;
 
-        if (auto* anim = target->getComponent<AnimationComponent>())
+        if (auto* anim = target->getComponent<Papyrus::AnimationComponent>())
             anim->m_Enabled = false;
 
-        if (auto* move = target->getComponent<MoveComponent>())
+        if (auto* move = target->getComponent<Papyrus::MoveComponent>())
             move->m_Enabled = false;
 
         // Optional: stop further hits while exploding
-        if (auto* collider = target->getComponent<BoxColliderComponent>())
+        if (auto* collider = target->getComponent<Papyrus::BoxColliderComponent>())
             collider->m_Enabled = false;
 
         // Swap texture on the existing TextureComponent (don’t add a second one)
-        if (auto* texture = target->getComponent<TextureComponent>())
+        if (auto* texture = target->getComponent<Papyrus::TextureComponent>())
         {
             texture->setTexture(explosionTexturePath);
         }
         else
         {
-            target->addComponent(std::make_unique<TextureComponent>(explosionTexturePath));
+            target->addComponent(std::make_unique<Papyrus::TextureComponent>(explosionTexturePath)); 
         }
 
         // Add one-shot explosion animator

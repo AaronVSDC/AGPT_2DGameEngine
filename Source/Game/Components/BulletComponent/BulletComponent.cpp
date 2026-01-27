@@ -24,7 +24,7 @@ namespace xc
         }
     }
 
-    void BulletComponent::onTriggerEnter(GameObject* other)
+    void BulletComponent::onTriggerEnter(Papyrus::GameObject* other)
     {
 
         if (!other) return;
@@ -32,10 +32,10 @@ namespace xc
 
         getOwner()->markForRemoval();
 
-        if (auto* enemyAnimation = other->getComponent<AnimationComponent>())
+        if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
             enemyAnimation->m_Enabled = false;
 
-        auto* enemyTexture = other->getComponent<TextureComponent>();
+        auto* enemyTexture = other->getComponent<Papyrus::TextureComponent>();
         if (!enemyTexture) return;
 
         enemyTexture->setTexture("Resources/Textures/explode64.bmp");

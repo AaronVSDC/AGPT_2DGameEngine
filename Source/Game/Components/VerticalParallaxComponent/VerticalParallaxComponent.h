@@ -5,7 +5,7 @@
 
 namespace xc 
 {
-    class VerticalParallaxComponent : public BaseComponent
+    class VerticalParallaxComponent : public Papyrus::BaseComponent
     {
     public:
         VerticalParallaxComponent(float speed);

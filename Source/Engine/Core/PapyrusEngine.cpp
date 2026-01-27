@@ -13,16 +13,13 @@ namespace Papyrus
 {
 	PapyrusEngine::PapyrusEngine()
 	{
-		GWindow = std::make_unique<Window>(
+		Window::create(
 			"Papyrus Engine",
 			640,
 			480
 		);
 	}
-	PapyrusEngine::~PapyrusEngine()
-	{
-		GWindow.reset();
-	}
+	PapyrusEngine::~PapyrusEngine() = default; 
 
 	void PapyrusEngine::run(const std::function<void()>& load)
 	{

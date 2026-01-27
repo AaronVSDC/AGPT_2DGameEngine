@@ -93,9 +93,10 @@ namespace Papyrus
 
     glm::mat4 Renderer::projection() const
     {
-        // SDL-like coordinates: (0,0) top-left, +x right, +y down
-        const float w = (float)GWindow->getWidth();
-        const float h = (float)GWindow->getHeight();
+        // coordinates: (0,0) top-left, +x right, +y down 
+        auto& window = Window::getInstance(); 
+        const float w = (float)window.getWidth(); 
+        const float h = (float)window.getHeight();
         return glm::ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
     }
 
@@ -150,7 +151,7 @@ namespace Papyrus
     void Renderer::render() const
     {
         // Ensure viewport matches current window size
-        glViewport(0, 0, GWindow->getWidth(), GWindow->getHeight());
+        glViewport(0, 0, Window::getInstance().getWidth(), Window::getInstance().getHeight());
 
         const auto& c = m_ClearColor;
         glClearColor(c.r / 255.f, c.g / 255.f, c.b / 255.f, c.a / 255.f);
@@ -158,7 +159,7 @@ namespace Papyrus
 
         SceneManager::getInstance().render();
 
-        SDL_GL_SwapWindow(GWindow->getHandle());
+        SDL_GL_SwapWindow(Window::getInstance().getHandle()); 
     }
 
     void Renderer::destroy()

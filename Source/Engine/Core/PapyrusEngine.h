@@ -1,10 +1,12 @@
 #include <SDL3/SDL.h>
 #include <functional>
+#include "PapyrusAPI.h" 
+
 
 namespace Papyrus
 {
 
-	class PapyrusEngine final
+	class PAPYRUS_API PapyrusEngine final
 	{
 	public: 
 		PapyrusEngine(); 
@@ -14,13 +16,7 @@ namespace Papyrus
 		PapyrusEngine& operator=(const PapyrusEngine&) = delete; 
 		PapyrusEngine& operator=(const PapyrusEngine&&) = delete;
 
-
 		void run(const std::function<void()>& load);
-
-	private: 
-		void load(); 
-
-
 	};
 
 

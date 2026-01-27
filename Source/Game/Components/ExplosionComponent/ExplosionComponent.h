@@ -5,9 +5,9 @@
 
 namespace xc
 {
-    class TextureComponent;
+    class Papyrus::TextureComponent;
 
-    class ExplosionComponent final : public BaseComponent
+    class ExplosionComponent final : public Papyrus::BaseComponent
     {
     public:
         ExplosionComponent(int columns, int rows, int frameCount, float framesPerSecond);
@@ -17,7 +17,7 @@ namespace xc
         void render() const override;
 
     private:
-        TextureComponent* m_textureComponent = nullptr;
+        Papyrus::TextureComponent* m_textureComponent = nullptr;
 
         int m_columns = 1;
         int m_rows = 1;

@@ -5,7 +5,7 @@
 #include <SDL3/SDL_rect.h>
 
 //namespace XenonClone
-namespace xc
+namespace Papyrus
 {
     class TextureComponent;
 

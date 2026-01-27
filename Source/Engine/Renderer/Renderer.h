@@ -33,8 +33,8 @@ namespace Papyrus
         GLuint m_VAO = 0;
         GLuint m_VBO = 0;
 
-        GLint m_uMVP = -1;
-        GLint m_uTex = -1;
+        GLint m_uMVP = -1; 
+        GLint m_uTex = -1; 
         GLint m_uUVOffset = -1;
         GLint m_uUVScale = -1;
 

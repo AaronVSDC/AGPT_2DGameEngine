@@ -19,7 +19,7 @@ namespace xc
 {
     static b2Vec2 getFrameSizePixels(const std::string& texturePath, int columns, int rows)
     {
-        auto* texture = ResourceManager::getInstance().loadTexture(texturePath);
+        auto* texture = Papyrus::ResourceManager::getInstance().loadTexture(texturePath);
         if (!texture) return { 0.0f, 0.0f };
          
         const b2Vec2 sheetSize = texture->getSize();
@@ -93,18 +93,18 @@ namespace xc
         const float spawnX = -frameSize.x;
         const float spawnY = randomFloat(frameSize.y , 100.f);
 
-        auto enemy = std::make_unique<GameObject>();
+        auto enemy = std::make_unique<Papyrus::GameObject>();
         enemy->setTag("Enemy");
         enemy->m_Transform.position = { spawnX, spawnY };
 
-        enemy->addComponent(std::make_unique<TextureComponent>(texturePath));
-        enemy->addComponent(std::make_unique<AnimationComponent>(columns, rows, frames, framesPerSecond));
-        enemy->addComponent(std::make_unique<PhysicsBodyComponent>());
-        enemy->addComponent(std::make_unique<BoxColliderComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
+        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+        enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
         enemy->addComponent(std::make_unique<MoveHorizontalComponent>());
         enemy->addComponent(std::make_unique<LonerShooterComponent>(1.2f, 100.f, "Resources/Textures/EnWeap6.bmp"));
 
-        SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+        Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }
 
     void EnemySpawnerComponent::spawnRusher()
@@ -119,17 +119,17 @@ namespace xc
         const float spawnX = randomFloat(0.0f, std::max(0.0f, m_screenWidthPixels - frameSize.x));
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
-        auto enemy = std::make_unique<GameObject>();
+        auto enemy = std::make_unique<Papyrus::GameObject>();
         enemy->setTag("Enemy");
         enemy->m_Transform.position = { spawnX, spawnY };
 
-        enemy->addComponent(std::make_unique<TextureComponent>(texturePath));
-        enemy->addComponent(std::make_unique<AnimationComponent>(columns, rows, frames, framesPerSecond));
-        enemy->addComponent(std::make_unique<PhysicsBodyComponent>());
-        enemy->addComponent(std::make_unique<BoxColliderComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
+        enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+        enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
+        enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
         enemy->addComponent(std::make_unique<MoveVerticalComponent>()); 
 
-        SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+        Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
     }
 
     void EnemySpawnerComponent::spawnDrone()
@@ -148,18 +148,18 @@ namespace xc
 
         for (int i = 0; i < 5; ++i)
         {
-            auto enemy = std::make_unique<GameObject>();
+            auto enemy = std::make_unique<Papyrus::GameObject>();
             enemy->setTag("Enemy");
 
             enemy->m_Transform.position = { spawnX, spawnY - (i * verticalSpacing) };
 
-            enemy->addComponent(std::make_unique<TextureComponent>(texturePath));
-            enemy->addComponent(std::make_unique<AnimationComponent>(columns, rows, frames, framesPerSecond));
-            enemy->addComponent(std::make_unique<PhysicsBodyComponent>());
-            enemy->addComponent(std::make_unique<BoxColliderComponent>());
+            enemy->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
+            enemy->addComponent(std::make_unique<Papyrus::AnimationComponent>(columns, rows, frames, framesPerSecond));
+            enemy->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
+            enemy->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
             enemy->addComponent(std::make_unique<DroneMovementComponent>());
 
-            SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
+            Papyrus::SceneManager::getInstance().getCurrentScene()->add(std::move(enemy));
         }
     }
 

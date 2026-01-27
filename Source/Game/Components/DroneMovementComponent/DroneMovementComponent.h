@@ -6,7 +6,7 @@
 
 namespace xc
 {
-    class DroneMovementComponent : public BaseComponent
+    class DroneMovementComponent : public Papyrus::BaseComponent
     {
     public:
         DroneMovementComponent();

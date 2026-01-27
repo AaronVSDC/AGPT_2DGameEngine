@@ -6,7 +6,7 @@
 
 namespace xc
 {
-    class LonerShooterComponent final : public BaseComponent
+    class LonerShooterComponent final : public Papyrus::BaseComponent
     {
     public:
         LonerShooterComponent(

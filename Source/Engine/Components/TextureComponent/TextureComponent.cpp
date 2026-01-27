@@ -11,17 +11,17 @@ namespace Papyrus
 	TextureComponent::TextureComponent(const std::string& fileName)
 		:m_FileName(fileName) 
 	{
-		m_pTexture = ResourceManager::getInstance().loadTexture(m_FileName); 
+		m_pTexture = Papyrus::ResourceManager::getInstance().loadTexture(m_FileName);
 	}
 
 	void TextureComponent::render() const
 	{
-		if (getOwner()->hasComponent<AnimationComponent>())
+		if (getOwner()->hasComponent<Papyrus::AnimationComponent>())
 			return;
-		if (getOwner()->hasComponent<PlayerAnimationComponent>()) 
+		if (getOwner()->hasComponent<PlayerAnimationComponent>())  
 			return; 
 		auto pos = getOwner()->m_Transform.position; 
-		Renderer::getInstance().renderTexture(*m_pTexture, pos.x, pos.y);
+		Papyrus::Renderer::getInstance().renderTexture(*m_pTexture, pos.x, pos.y);
 	}
 
 	b2Vec2 TextureComponent::getSize() const
@@ -32,6 +32,6 @@ namespace Papyrus
 	void TextureComponent::setTexture(const std::string& fileName)
 	{
 		m_FileName = fileName;
-		m_pTexture = ResourceManager::getInstance().loadTexture(m_FileName);
+		m_pTexture = Papyrus::ResourceManager::getInstance().loadTexture(m_FileName); 
 	}
 }

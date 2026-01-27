@@ -15,7 +15,7 @@ namespace xc
 
     void ExplosionComponent::start()
     {
-        m_textureComponent = getOwner()->getComponent<TextureComponent>();
+        m_textureComponent = getOwner()->getComponent<Papyrus::TextureComponent>(); 
 
         const b2Vec2 textureSize = m_textureComponent->getSize();
 
@@ -57,7 +57,7 @@ namespace xc
 
         const auto pos = getOwner()->m_Transform.position;
 
-        Renderer::getInstance().renderTexture(
+        Papyrus::Renderer::getInstance().renderTexture(
             *m_textureComponent->getTexture(),
             source,
             pos.x,

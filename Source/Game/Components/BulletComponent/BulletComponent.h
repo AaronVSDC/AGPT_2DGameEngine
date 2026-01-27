@@ -5,13 +5,13 @@
 
 namespace xc
 {
-    class BulletComponent final : public BaseComponent
+    class BulletComponent final : public Papyrus::BaseComponent
     {
     public:
         explicit BulletComponent(float speedPixelsPerSecond);
 
         void fixedUpdate(float deltaTime) override;
-        void onTriggerEnter(GameObject* other) override; 
+        void onTriggerEnter(Papyrus::GameObject* other) override;
 
 
     private:

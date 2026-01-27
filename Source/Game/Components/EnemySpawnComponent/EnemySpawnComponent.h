@@ -7,7 +7,7 @@
 
 namespace xc
 {
-    class EnemySpawnerComponent final : public BaseComponent
+    class EnemySpawnerComponent final : public Papyrus::BaseComponent
     {
     public:
         EnemySpawnerComponent(

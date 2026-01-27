@@ -103,7 +103,7 @@ namespace Papyrus
             static_cast<float>(m_frameHeightPixels)
         };
 
-        Renderer::getInstance().renderTexture(
+        Papyrus::Renderer::getInstance().renderTexture(
             texture,
             sourceRectangle,
             position.x,

@@ -14,7 +14,7 @@ namespace xc
         auto owner = getOwner();
         if (!owner) return;
 
-        auto texComp = owner->getComponent<TextureComponent>();
+        auto texComp = owner->getComponent<Papyrus::TextureComponent>();
         if (!texComp) return;
 
         float textureHeight = texComp->getSize().y;

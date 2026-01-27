@@ -9,7 +9,7 @@ namespace Papyrus
     class TextureComponent;
     class MoveComponent;
 
-    class PlayerAnimationComponent final : public BaseComponent
+    class PlayerAnimationComponent final : public Papyrus::BaseComponent
     {
     public:
         PlayerAnimationComponent(

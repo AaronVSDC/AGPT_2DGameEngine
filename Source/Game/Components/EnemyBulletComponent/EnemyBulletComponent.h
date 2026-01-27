@@ -5,13 +5,13 @@
 
 namespace xc
 {
-    class EnemyBulletComponent final : public BaseComponent
+    class EnemyBulletComponent final : public Papyrus::BaseComponent
     {
     public:
         explicit EnemyBulletComponent(float speedPixelsPerSecond);
 
         void fixedUpdate(float fixedDeltaTime) override;
-        void onTriggerEnter(GameObject* other) override;
+        void onTriggerEnter(Papyrus::GameObject* other) override; 
 
     private:
         float m_speed = 0.0f;

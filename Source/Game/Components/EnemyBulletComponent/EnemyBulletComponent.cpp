@@ -23,7 +23,7 @@ namespace xc
 
     }
 
-    void EnemyBulletComponent::onTriggerEnter(GameObject* other)
+    void EnemyBulletComponent::onTriggerEnter(Papyrus::GameObject* other)
     {
         std::cout << "EnemyBullet trigger with tag=" << (other ? other->getTag() : "null") << "\n";
 

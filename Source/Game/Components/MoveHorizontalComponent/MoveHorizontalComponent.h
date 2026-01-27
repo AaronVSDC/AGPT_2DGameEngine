@@ -5,7 +5,7 @@
 
 namespace xc
 {
-    class MoveHorizontalComponent : public BaseComponent
+    class MoveHorizontalComponent : public Papyrus::BaseComponent
     {
     public:
         MoveHorizontalComponent();

@@ -5,11 +5,20 @@
 
 namespace Papyrus
 { 
-    std::unique_ptr<Window> GWindow = nullptr;
 
-    Window::Window(const std::string& title, int width, int height)
-        : m_Width(width), m_Height(height)
+    Window::Window() = default; 
+
+    Window::~Window()
     {
+        if (m_GLContext) SDL_GL_DestroyContext(m_GLContext);
+        if (m_Window) SDL_DestroyWindow(m_Window);
+        m_GLContext = nullptr;
+        m_Window = nullptr;
+    }
+    void Window::create(const std::string& title, int width, int height)
+    {
+        m_Width = width; 
+        m_Height = height; 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -38,12 +47,5 @@ namespace Papyrus
         if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress))
             throw std::runtime_error("gladLoadGLLoader failed");
     }
-
-    Window::~Window()
-    {
-        if (m_GLContext) SDL_GL_DestroyContext(m_GLContext);
-        if (m_Window) SDL_DestroyWindow(m_Window);
-        m_GLContext = nullptr;
-        m_Window = nullptr;
-    }
+    
 }

@@ -4,7 +4,7 @@
 #include "GameObject.h"
 #include "Renderer.h"
 
-namespace xc
+namespace Papyrus
 {
     AnimationComponent::AnimationComponent(
         int columns,

@@ -4,9 +4,9 @@
 #include "BaseComponent.h"
 #include <box2d/math_functions.h>
 
-namespace xc
+namespace Papyrus
 {
-    class MoveComponent final : public BaseComponent
+    class MoveComponent final : public Papyrus::BaseComponent
     {
     public:
         MoveComponent(

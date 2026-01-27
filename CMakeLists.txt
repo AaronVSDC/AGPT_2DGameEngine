@@ -1,120 +1,127 @@
-﻿cmake_minimum_required (VERSION 3.16)
+﻿cmake_minimum_required(VERSION 3.16)
+project(Papyrus LANGUAGES C CXX)
 
-if (POLICY CMP0141)
-  cmake_policy(SET CMP0141 NEW)
-  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
-endif()
- 
- 
- 
- 
-project(2DGameEngine LANGUAGES C CXX)    
- 
-include(FetchContent)  
- 
-# ----------------------------------------------------------------------------------
-# BOX2D
-# -------------------------------------------------------------------- --------------
-FetchContent_Declare( 
-    box2d
-    GIT_REPOSITORY https://github.com/erincatto/box2d.git
-    GIT_TAG v3.1.1 
+include(FetchContent)
+
+# -----------------------------
+# Dependencies
+# -----------------------------
+FetchContent_Declare(
+  box2d
+  GIT_REPOSITORY https://github.com/erincatto/box2d.git
+  GIT_TAG v3.1.1
 )
- 
-FetchContent_MakeAvailable(box2d) 
-# ----------------------------------------------------------------------------------
-# GLM
-# ----------------------------------------------------------------------------------
+FetchContent_MakeAvailable(box2d)
 
-FetchContent_Declare(glm
+FetchContent_Declare(
+  glm
   GIT_REPOSITORY https://github.com/g-truc/glm.git
   GIT_TAG 1.0.1
 )
 FetchContent_MakeAvailable(glm)
 
-
-# ----------------------------------------------------------------------------------
-# SDL3
-# ----------------------------------------------------------------------------------
 FetchContent_Declare(
   SDL3
   GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
   GIT_TAG release-3.2.22
-) 
+)
 FetchContent_MakeAvailable(SDL3)
 
-# ----------------------------------------------------------------------------------
-# GLAD
-# ----------------------------------------------------------------------------------
-add_library(glad STATIC 3rdParty/glad/src/glad.c )
+add_library(glad STATIC 3rdParty/glad/src/glad.c)
 target_include_directories(glad PUBLIC 3rdParty/glad/include)
- 
 
-# ----------------------------------------------------------------------------------
-# stb_image
-# ----------------------------------------------------------------------------------
 add_library(stb_image STATIC 3rdParty/stb_image/stb_image.cpp)
 target_include_directories(stb_image PUBLIC 3rdParty/stb_image)
 
-
-
-# ----------------------------------------------------------------------------------
-# include all files needed over here (.cpp files or .h files if there are no .cpp )
-# ----------------------------------------------------------------------------------
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h" 
+# -----------------------------
+# Engine (DLL)
+# -----------------------------
+file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.h"
 )
 
-add_executable (2DGameEngine ${SOURCES} )
+add_library(PapyrusEngine SHARED ${ENGINE_SOURCES})
+target_compile_definitions(PapyrusEngine PRIVATE PAPYRUS_ENGINE_BUILD_DLL)
 
-
-# ----------------------------------------------------------------------------------
-# Auto–collect all header directories so you can #include without relative paths
-# ----------------------------------------------------------------------------------
-file(GLOB_RECURSE HEADER_FILES
-    CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h"
+# Make every engine header directory visible (so includes like "GameObject.h" work)
+file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine/*.h"
 )
 
-set(HEADER_DIRS "")
-foreach(HDR ${HEADER_FILES})
-  get_filename_component(HDR_DIR ${HDR} DIRECTORY)
-  list(APPEND HEADER_DIRS ${HDR_DIR})
+set(ENGINE_HEADER_DIRS "")
+foreach(HDR ${ENGINE_HEADERS})
+  get_filename_component(DIR ${HDR} DIRECTORY)
+  list(APPEND ENGINE_HEADER_DIRS ${DIR})
 endforeach()
-list(REMOVE_DUPLICATES HEADER_DIRS)
+list(REMOVE_DUPLICATES ENGINE_HEADER_DIRS)
 
-target_include_directories(2DGameEngine 
-  PRIVATE 
-    ${HEADER_DIRS}
-)
+target_include_directories(PapyrusEngine
+  PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Engine"
+    ${ENGINE_HEADER_DIRS}  
+)  
 
-target_link_libraries(2DGameEngine PRIVATE
+target_link_libraries(PapyrusEngine  
+  PUBLIC
     box2d
     SDL3::SDL3
-    glad 
-    stb_image 
     glm::glm-header-only
+    glad
+    stb_image
 )
 
-#Copy SDL3.dll next to the executable after build
-add_custom_command(TARGET 2DGameEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        $<TARGET_FILE:SDL3::SDL3> 
-        $<TARGET_FILE_DIR:2DGameEngine> 
+# -----------------------------
+# Game (EXE)
+# -----------------------------
+file(GLOB_RECURSE GAME_SOURCES CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.h"
+)
+
+add_executable(Game ${GAME_SOURCES})
+
+# Make every game header directory visible too (so includes like "AnimationComponent.h" work)
+file(GLOB_RECURSE GAME_HEADERS CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/Source/Game/*.h"
+)
+
+set(GAME_HEADER_DIRS "")
+foreach(HDR ${GAME_HEADERS})
+  get_filename_component(DIR ${HDR} DIRECTORY)
+  list(APPEND GAME_HEADER_DIRS ${DIR})
+endforeach()
+list(REMOVE_DUPLICATES GAME_HEADER_DIRS)
+
+target_include_directories(Game
+  PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/Source/Game"
+    ${GAME_HEADER_DIRS}
 ) 
 
-#same with resource folder
-set(RESOURCE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
-set(RESOURCE_BINARY_DIR "$<TARGET_FILE_DIR:2DGameEngine>/Resources")
- 
-add_custom_command(TARGET 2DGameEngine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}" 
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${RESOURCE_SOURCE_DIR}"
-            "${RESOURCE_BINARY_DIR}"  
+target_link_libraries(Game PRIVATE PapyrusEngine)
+
+# Copy runtime DLLs next to Game.exe (PapyrusEngine.dll, SDL3.dll, etc.)
+add_custom_command(TARGET Game POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_RUNTIME_DLLS:Game>
+    $<TARGET_FILE_DIR:Game>
+  COMMAND_EXPAND_LISTS 
 )
- 
-    if (CMAKE_VERSION VERSION_GREATER 3.12) 
-  set_property(TARGET 2DGameEngine PROPERTY CXX_STANDARD 20)  
-endif()    
+
+# Copy Resources folder next to Game.exe
+set(RESOURCE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
+set(RESOURCE_BINARY_DIR "$<TARGET_FILE_DIR:Game>/Resources")
+
+add_custom_command(TARGET Game POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${RESOURCE_SOURCE_DIR}"
+          "${RESOURCE_BINARY_DIR}"
+)
+
+# C++ standard
+set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD 20)
+set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(TARGET Game         PROPERTY CXX_STANDARD 20)
+set_property(TARGET Game         PROPERTY CXX_STANDARD_REQUIRED ON)
