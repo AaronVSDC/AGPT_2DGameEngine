@@ -11,6 +11,7 @@
 #include "MoveVerticalComponent.h"
 #include "MoveHorizontalComponent.h"
 #include "EnemySpawnComponent.h"
+#include "PowerUpSpawnComponent.h"
 #include "VerticalParallaxComponent.h"
 #include "SceneManager.h"
 #include "InputManager.h"
@@ -72,7 +73,13 @@ void load()
 	//ENEMY SPAWNER
 	//------------------------------------------------------------------------------------------------
 	auto enemySpawner = std::make_unique<Papyrus::GameObject>();
-	enemySpawner->addComponent(std::make_unique<xc::EnemySpawnerComponent>(3.f, window.getWidth()));
+	enemySpawner->addComponent(std::make_unique<xc::PowerUpSpawnComponent>(3.f, window.getWidth()));
+
+	//------------------------------------------------------------------------------------------------
+	//POWERUP SPAWNER
+	//------------------------------------------------------------------------------------------------
+	auto powerUpSpawner = std::make_unique<Papyrus::GameObject>();
+	powerUpSpawner->addComponent(std::make_unique<xc::EnemySpawnerComponent>(3.f, window.getWidth()));
 
 
 
@@ -101,6 +108,7 @@ void load()
 	//----------------------------------------
 	mainLevel->add(std::move(playerShip));
 	mainLevel->add(std::move(enemySpawner));
+	mainLevel->add(std::move(powerUpSpawner));
 	mainLevel->add(std::move(companion)); 
 }
 
