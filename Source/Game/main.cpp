@@ -127,15 +127,6 @@ void load()
 	comp->setHighScoreTextObject(highScore.get());
 	comp->setSaveFile("highscore.txt");  
 
-	auto life1 = std::make_unique<Papyrus::GameObject>(); 
-	life1->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/HealthIcon.bmp")); 
-	life1->m_Transform.position = { 110, 300 };
-	life1->m_Transform.scale = { 0.35f, 0.35f };
-
-	auto life2 = std::make_unique<Papyrus::GameObject>();
-	life2->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/Ship1.bmp"));
-	life2->m_Transform.position = { window.getWidth() - 80.f, window.getHeight() - 80.f };
-	life2->m_Transform.scale = { 0.35f, 0.35f };
 
 	//-------------------------------------------------------------------------------------------------------
 	//INPUT ASSIGNMENT/ CONTROLLER BINDING
@@ -168,7 +159,6 @@ void load()
 	mainLevel->add(std::move(score));
 	mainLevel->add(std::move(highScoreText));
 	mainLevel->add(std::move(highScore)); 
-	mainLevel->add(std::move(life1)); 
 
 
 }

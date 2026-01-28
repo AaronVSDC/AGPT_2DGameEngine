@@ -9,6 +9,11 @@ namespace xc
 
 		if (other->getTag() == "Aestroid")
 		{
+			explodeAndDie(
+				getOwner(),
+				"Resources/Textures/explode64.bmp",
+				5, 2, 10, 16.0f
+			);
 			return; 
 		}
 		if (other->getTag() == "Enemy")
@@ -28,15 +33,10 @@ namespace xc
 			);
 		}
 
-		else if (other->getTag() == "ShieldPowerUp")  
+		else if (other->getTag() == "PowerUp")  
 		{
 			other->markForRemoval(); 
 		}
-		else if (other->getTag() == "WeaponPowerup")
-		{
-
-		}
-
 
 	}
 

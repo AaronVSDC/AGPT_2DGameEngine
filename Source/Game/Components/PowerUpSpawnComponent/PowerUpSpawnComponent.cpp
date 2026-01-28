@@ -90,7 +90,7 @@ namespace xc
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
         auto powerUp = std::make_unique<Papyrus::GameObject>();
-        powerUp->setTag("ShieldPowerUp");
+        powerUp->setTag("PowerUp");
         powerUp->m_Transform.position = { spawnX, spawnY };
 
         powerUp->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
@@ -115,7 +115,7 @@ namespace xc
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
         auto powerUp = std::make_unique<Papyrus::GameObject>();
-        powerUp->setTag("WeaponPowerUp"); 
+        powerUp->setTag("PowerUp");  
         powerUp->m_Transform.position = { spawnX, spawnY };
 
         powerUp->addComponent(std::make_unique<Papyrus::TextureComponent>(texturePath));
