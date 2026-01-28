@@ -1,6 +1,9 @@
 #ifndef MOVE_UP_COMMAND_H
 #define MOVE_UP_COMMAND_H
 
+#include <cmath>
+#include <memory>
+
 #include "Command.h"
 #include "GameObject.h"
 #include "MoveComponent.h"
@@ -9,23 +12,29 @@
 #include "PhysicsBodyComponent.h"
 #include "BoxColliderComponent.h"
 #include "SceneManager.h"
+#include "TextureComponent.h"
 
 namespace Papyrus
 {
-    class MoveUpCommand final : public Command 
+    // This file was mapped for a -90° rotated world.
+    // For a +90° rotated world (i.e. 180° difference vs -90°), all cardinal directions invert,
+    // and the analog rotation changes from +90° to -90°.
+
+    class MoveUpCommand final : public Command
     {
     public:
-        explicit MoveUpCommand(GameObject* gameObject)  
-            : m_gameObject(gameObject) {} 
+        explicit MoveUpCommand(GameObject* gameObject)
+            : m_gameObject(gameObject) {}
 
-        void execute() override 
-        { 
+        void execute() override
+        {
             if (!m_gameObject) return;
 
-            auto* moveComponent = m_gameObject->getComponent<MoveComponent>(); 
+            auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
             if (!moveComponent) return;
 
-            moveComponent->addAcceleration({ 0.0f, -1.0f });
+            // Up now points the opposite way on the rotated axis
+            moveComponent->addAcceleration({ -1.0f, 0.0f });
         }
 
     private:
@@ -36,7 +45,27 @@ namespace Papyrus
     class MoveDownCommand final : public Command
     {
     public:
-        explicit MoveDownCommand(GameObject* gameObject) 
+        explicit MoveDownCommand(GameObject* gameObject)
+            : m_gameObject(gameObject) {}
+
+        void execute() override
+        {
+            if (!m_gameObject) return;
+
+            auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
+            if (!moveComponent) return;
+
+            moveComponent->addAcceleration({ 1.0f, 0.0f });
+        }
+
+    private:
+        GameObject* m_gameObject{};
+    };
+
+    class MoveLeftCommand final : public Command
+    {
+    public:
+        explicit MoveLeftCommand(GameObject* gameObject)
             : m_gameObject(gameObject) {}
 
         void execute() override
@@ -53,28 +82,8 @@ namespace Papyrus
         GameObject* m_gameObject{};
     };
 
-    class MoveLeftCommand final : public Command 
-    {
-    public:
-        explicit MoveLeftCommand(GameObject* gameObject)
-            : m_gameObject(gameObject) {}
-
-        void execute() override
-        {
-            if (!m_gameObject) return;
-
-            auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
-            if (!moveComponent) return;
-
-            moveComponent->addAcceleration({ -1.0f, 0.0f });
-        }
-
-    private:
-        GameObject* m_gameObject{};
-    };
-
     class MoveRightCommand final : public Command
-    { 
+    {
     public:
         explicit MoveRightCommand(GameObject* gameObject)
             : m_gameObject(gameObject) {}
@@ -86,7 +95,7 @@ namespace Papyrus
             auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
             if (!moveComponent) return;
 
-            moveComponent->addAcceleration({ 1.0f, 0.0f });
+            moveComponent->addAcceleration({ 0.0f, -1.0f });
         }
 
     private:
@@ -111,11 +120,11 @@ namespace Papyrus
 
             auto* playerTexture = m_player->getComponent<TextureComponent>();
             if (!playerTexture)
-                return; 
-            
+                return;
 
+            // Previously spawned "forward" along +X. For +90° world mapping, forward is along -X.
             playerBullet->m_Transform.position = {
-                playerPos.x + 15,
+                playerPos.x - 15.0f,
                 playerPos.y
             };
 
@@ -125,35 +134,35 @@ namespace Papyrus
             playerBullet->addComponent(
                 std::make_unique<AnimationComponent>(2, 1, 2, 2));
 
-            playerBullet->addComponent(std::make_unique<PhysicsBodyComponent>()); 
-            playerBullet->addComponent(std::make_unique<BoxColliderComponent>()); 
+            playerBullet->addComponent(std::make_unique<PhysicsBodyComponent>());
+            playerBullet->addComponent(std::make_unique<BoxColliderComponent>());
 
             playerBullet->addComponent(
                 std::make_unique<xc::BulletComponent>(800.0f) // speed (px/s)
             );
-            playerBullet->start(); 
-            playerBullet->onEnable(); 
-            SceneManager::getInstance() 
-                .getCurrentScene()  
+
+            playerBullet->start();
+            playerBullet->onEnable();
+            SceneManager::getInstance()
+                .getCurrentScene()
                 ->add(std::move(playerBullet));
 
-            //companionBullets
-
-            auto companions = SceneManager::getInstance().getCurrentScene()->findGameObjectsByTag("Companion"); 
-            if (companions.empty()) return; 
+            // companion bullets
+            auto companions = SceneManager::getInstance().getCurrentScene()->findGameObjectsByTag("Companion");
+            if (companions.empty()) return;
 
             for (auto& companion : companions)
             {
-                auto companionBullet = std::make_unique<GameObject>(); 
+                auto companionBullet = std::make_unique<GameObject>();
 
-                const b2Vec2 companionPos = companion->m_Transform.position; 
+                const b2Vec2 companionPos = companion->m_Transform.position;
 
                 auto* companionTexture = companion->getComponent<TextureComponent>();
                 if (!companionTexture)
                     return;
 
-                companionBullet->m_Transform.position = { 
-                    companionPos.x + 15,
+                companionBullet->m_Transform.position = {
+                    companionPos.x - 15.0f,
                     companionPos.y
                 };
 
@@ -169,12 +178,12 @@ namespace Papyrus
                 companionBullet->addComponent(
                     std::make_unique<xc::BulletComponent>(800.0f) // speed (px/s)
                 );
+
                 companionBullet->start();
                 companionBullet->onEnable();
                 SceneManager::getInstance()
                     .getCurrentScene()
                     ->add(std::move(companionBullet));
-
             }
         }
 
@@ -198,21 +207,25 @@ namespace Papyrus
 
             auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
             if (!moveComponent)
-                return; 
+                return;
 
             const float magnitude = std::sqrt(value.x * value.x + value.y * value.y);
             if (magnitude <= 0.0f)
                 return;
 
+            // Keep controller Y flipped (common for screen-space)
             const b2Vec2 normalizedDirection{ value.x / magnitude, -value.y / magnitude };
-            moveComponent->addAcceleration(normalizedDirection);
+
+            // Was rotating +90° (for -90° world). For +90° world, rotate -90° instead:
+            // (x, y) rotated -90° => (y, -x)
+            const b2Vec2 rotatedDirection{ normalizedDirection.y, -normalizedDirection.x };
+
+            moveComponent->addAcceleration(rotatedDirection);
         }
 
     private:
         GameObject* m_gameObject{};
     };
 }
-
-
 
 #endif

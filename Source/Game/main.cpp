@@ -1,5 +1,9 @@
 ﻿#include "main.h"
 #include <DecideCollisionComponent.h>
+#include <UpdateUIScoreComponent.h>
+#include <HighScoreComponent.h>
+#include <HealthComponent.h>
+#include <HealthUIComponent.h>
 
 void load()
 {
@@ -16,6 +20,7 @@ void load()
 	background->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/galaxy2.bmp"));
 	background->m_Transform.position.x = 0.f; 
 	background->m_Transform.position.y = 0.f;  
+	background->m_Transform.rotation = 90.f; 
 	mainLevel->add(std::move(background)); 
 
 	auto parallax2 = std::make_unique< Papyrus::GameObject>(); 
@@ -42,8 +47,9 @@ void load()
 	playerShip->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
 	playerShip->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
 	playerShip->addComponent(std::make_unique<xc::DecideCollisionComponent>()); 
+	playerShip->addComponent(std::make_unique<xc::HealthComponent>()); 
+	playerShip->addComponent(std::make_unique<xc::HealthUIComponent>()); 
 	playerShip->setTag("Player");
-
 
 	//----------------------------------------------------------------------------------------------------------
 	//COMPANION
@@ -69,7 +75,67 @@ void load()
 	auto powerUpSpawner = std::make_unique<Papyrus::GameObject>();
 	powerUpSpawner->addComponent(std::make_unique<xc::EnemySpawnerComponent>(3.f, window.getWidth()));
 
+	//------------------------------------------------------------------------------------------------
+	//TEXT HUD
+	//------------------------------------------------------------------------------------------------
+	auto player1Text = std::make_unique<Papyrus::GameObject>();
+	player1Text->addComponent(std::make_unique<Papyrus::TextComponent>(
+		"Resources/Textures/font16x16.bmp",
+		16,
+		16,
+		"Player One"
+	));
+	player1Text->m_Transform.scale = { 0.7f,0.7f };
+	player1Text->m_Transform.position = { 88.f, 510};
 
+
+	auto score = std::make_unique<Papyrus::GameObject>(); 
+	score->addComponent(std::make_unique<Papyrus::TextComponent>(
+		"Resources/Textures/font16x16.bmp",
+		16,
+		16,
+		"00000"
+	));
+	score->m_Transform.position = { 110.f, 510 };
+
+
+
+	auto highScoreText = std::make_unique<Papyrus::GameObject>();
+
+	highScoreText->addComponent(std::make_unique<Papyrus::TextComponent>( 
+		"Resources/Textures/font16x16.bmp",
+		16,
+		16,
+		"High score" 
+	));
+	highScoreText->m_Transform.scale = { 0.7f,0.7f }; 
+	highScoreText->m_Transform.position = { 88, 300 }; 
+
+	auto highScore = std::make_unique<Papyrus::GameObject>();
+
+	highScore->addComponent(std::make_unique<Papyrus::TextComponent>(
+		"Resources/Textures/font16x16.bmp",
+		16,
+		16,
+		"0"
+	));
+	highScore->m_Transform.position = { 110, 300 };
+
+
+	auto* comp = new xc::UpdateUIScoreComponent();
+	score->addComponent(std::unique_ptr<Papyrus::BaseComponent>(comp)); 
+	comp->setHighScoreTextObject(highScore.get());
+	comp->setSaveFile("highscore.txt");  
+
+	auto life1 = std::make_unique<Papyrus::GameObject>(); 
+	life1->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/HealthIcon.bmp")); 
+	life1->m_Transform.position = { 110, 300 };
+	life1->m_Transform.scale = { 0.35f, 0.35f };
+
+	auto life2 = std::make_unique<Papyrus::GameObject>();
+	life2->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/Ship1.bmp"));
+	life2->m_Transform.position = { window.getWidth() - 80.f, window.getHeight() - 80.f };
+	life2->m_Transform.scale = { 0.35f, 0.35f };
 
 	//-------------------------------------------------------------------------------------------------------
 	//INPUT ASSIGNMENT/ CONTROLLER BINDING
@@ -97,7 +163,14 @@ void load()
 	mainLevel->add(std::move(playerShip));
 	mainLevel->add(std::move(enemySpawner));
 	mainLevel->add(std::move(powerUpSpawner));
-	mainLevel->add(std::move(companion)); 
+	mainLevel->add(std::move(companion));  
+	mainLevel->add(std::move(player1Text));
+	mainLevel->add(std::move(score));
+	mainLevel->add(std::move(highScoreText));
+	mainLevel->add(std::move(highScore)); 
+	mainLevel->add(std::move(life1)); 
+
+
 }
 
 

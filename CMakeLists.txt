@@ -7,12 +7,12 @@ include(FetchContent)
 # Dependencies
 # ----------------------------- 
 FetchContent_Declare(
-  box2d
+  box2d 
   GIT_REPOSITORY https://github.com/erincatto/box2d.git
   GIT_TAG v3.1.1
 )
 FetchContent_MakeAvailable(box2d)
-
+  
 FetchContent_Declare(
   glm
   GIT_REPOSITORY https://github.com/g-truc/glm.git
@@ -125,4 +125,4 @@ set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD 20)
 set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(TARGET Game         PROPERTY CXX_STANDARD 20)
 set_property(TARGET Game         PROPERTY CXX_STANDARD_REQUIRED ON)
- 
+    

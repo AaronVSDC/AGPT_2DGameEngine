@@ -93,11 +93,21 @@ namespace Papyrus
 
     glm::mat4 Renderer::projection() const
     {
-        // coordinates: (0,0) top-left, +x right, +y down 
-        auto& window = Window::getInstance(); 
-        const float w = (float)window.getWidth(); 
+        // coordinates: (0,0) top-left, +x right, +y down
+        auto& window = Window::getInstance();
+        const float w = (float)window.getWidth();
         const float h = (float)window.getHeight();
-        return glm::ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
+        glm::mat4 P = glm::ortho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
+         
+        constexpr float kSceneRotationDegrees = 90.0f;
+        const glm::vec2 center{ w * 0.5f, h * 0.5f };
+
+        glm::mat4 V(1.0f);
+        V = glm::translate(V, glm::vec3(center, 0.0f));
+        V = glm::rotate(V, glm::radians(kSceneRotationDegrees), glm::vec3(0, 0, 1));
+        V = glm::translate(V, glm::vec3(-center, 0.0f));
+
+        return P * V;
     }
 
     void Renderer::init()

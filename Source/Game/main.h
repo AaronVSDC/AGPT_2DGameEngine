@@ -20,5 +20,6 @@
 #include "InputManager.h"
 #include "Window.h"
 #include "CompanionBehaviorComponent.h"   
+#include "TextComponent.h"
 
 #endif

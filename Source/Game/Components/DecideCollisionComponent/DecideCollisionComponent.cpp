@@ -28,13 +28,14 @@ namespace xc
 			);
 		}
 
-		else if (other->getTag() == "PowerUp")  
+		else if (other->getTag() == "ShieldPowerUp")  
 		{
 			other->markForRemoval(); 
-
+		}
+		else if (other->getTag() == "WeaponPowerup")
+		{
 
 		}
-
 
 
 	}

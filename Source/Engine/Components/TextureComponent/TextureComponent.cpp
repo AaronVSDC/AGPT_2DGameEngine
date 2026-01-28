@@ -18,10 +18,15 @@ namespace Papyrus
 	{
 		if (getOwner()->hasComponent<Papyrus::AnimationComponent>())
 			return;
-		if (getOwner()->hasComponent<PlayerAnimationComponent>())  
-			return; 
-		auto pos = getOwner()->m_Transform.position; 
-		Papyrus::Renderer::getInstance().renderTexture(*m_pTexture, pos.x, pos.y);
+		if (getOwner()->hasComponent<PlayerAnimationComponent>()) 
+			return;
+		auto pos = getOwner()->m_Transform.position;
+		Papyrus::Renderer::getInstance().renderTexture(
+			*m_pTexture,
+			pos.x,
+			pos.y,
+			getOwner()->m_Transform.rotation
+		);
 	}
 
 	b2Vec2 TextureComponent::getSize() const
