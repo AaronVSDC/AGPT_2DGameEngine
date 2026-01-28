@@ -64,7 +64,7 @@ namespace xc
         for (int i = 0; i < count; ++i)
         {
             auto asteroid = std::make_unique<Papyrus::GameObject>();
-            asteroid->setTag("Enemy");
+            asteroid->setTag("Aestroid"); 
 
             float offsetX = (i - 1) * spacing;
             asteroid->m_Transform.position = { pos.x + offsetX, pos.y };

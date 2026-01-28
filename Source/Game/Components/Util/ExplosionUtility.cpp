@@ -7,6 +7,7 @@
 #include "MoveComponent.h"
 #include "ExplosionComponent.h"
 #include "BoxColliderComponent.h"
+#include <PhysicsBodyComponent.h>
 
 namespace xc
 {
@@ -34,6 +35,9 @@ namespace xc
         // Optional: stop further hits while exploding
         if (auto* collider = target->getComponent<Papyrus::BoxColliderComponent>())
             collider->m_Enabled = false;
+
+        if (auto* collider = target->getComponent<Papyrus::PhysicsBodyComponent>())
+            collider->m_Enabled = false; 
 
         // Swap texture on the existing TextureComponent (don’t add a second one)
         if (auto* texture = target->getComponent<Papyrus::TextureComponent>())

@@ -1,23 +1,5 @@
 ﻿#include "main.h"
-#include "PapyrusEngine.h"
-
-#include "TextureComponent.h"
-#include "KeyboardMoveCommand.h"
-#include "AnimationComponent.h"
-#include "PlayerAnimationComponent.h"
-#include "PhysicsBodyComponent.h"
-#include "BoxColliderComponent.h" 
-#include "LonerShooterComponent.h"
-#include "MoveVerticalComponent.h"
-#include "MoveHorizontalComponent.h"
-#include "EnemySpawnComponent.h"
-#include "PowerUpSpawnComponent.h"
-#include "VerticalParallaxComponent.h"
-#include "SceneManager.h"
-#include "InputManager.h"
-#include "Window.h"
-
-
+#include <DecideCollisionComponent.h>
 
 void load()
 {
@@ -59,6 +41,7 @@ void load()
 	playerShip->addComponent(std::make_unique<Papyrus::MoveComponent>(400.0f,1600.0f,2000.0f));
 	playerShip->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
 	playerShip->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
+	playerShip->addComponent(std::make_unique<xc::DecideCollisionComponent>()); 
 	playerShip->setTag("Player");
 
 
@@ -66,8 +49,13 @@ void load()
 	//COMPANION
 	//----------------------------------------------------------------------------------------------------------
 	auto companion = std::make_unique<Papyrus::GameObject>(); 
-	companion->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/clone.bmp")); 
-	companion->addComponent(std::make_unique<Papyrus::AnimationComponent>(4, 4, 4*4, 14.f)); 
+	companion->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/clone.bmp"));  
+	companion->addComponent(std::make_unique<Papyrus::AnimationComponent>(4, 4, 4*4, 14.f));  
+	companion->addComponent(std::make_unique<xc::CompanionBehaviorComponent>(glm::vec2{ 55,55 })); 
+	companion->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>()); 
+	companion->addComponent(std::make_unique<Papyrus::BoxColliderComponent>()); 
+	companion->addComponent(std::make_unique<xc::DecideCollisionComponent>()); 
+	companion->setTag("Companion"); 
 
 	//------------------------------------------------------------------------------------------------
 	//ENEMY SPAWNER

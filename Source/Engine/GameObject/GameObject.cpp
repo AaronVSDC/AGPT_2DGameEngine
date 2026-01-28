@@ -126,6 +126,7 @@ namespace Papyrus
 	{
 		if (m_pendingRemoval) return; 
 		m_pendingRemoval = true;
+
 	}
 
 }

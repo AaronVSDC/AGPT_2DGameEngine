@@ -22,7 +22,7 @@ namespace Papyrus
         { 
             if (!m_gameObject) return;
 
-            auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
+            auto* moveComponent = m_gameObject->getComponent<MoveComponent>(); 
             if (!moveComponent) return;
 
             moveComponent->addAcceleration({ 0.0f, -1.0f });
@@ -105,44 +105,77 @@ namespace Papyrus
             if (!m_player)
                 return;
 
-            auto bullet = std::make_unique<GameObject>();
+            auto playerBullet = std::make_unique<GameObject>();
 
             const b2Vec2 playerPos = m_player->m_Transform.position;
 
             auto* playerTexture = m_player->getComponent<TextureComponent>();
             if (!playerTexture)
-                return;
+                return; 
+            
 
-            const b2Vec2 playerSize = playerTexture->getSize();
-
-            bullet->m_Transform.position = {
+            playerBullet->m_Transform.position = {
                 playerPos.x + 15,
                 playerPos.y
             };
 
-            bullet->addComponent(
+            playerBullet->addComponent(
                 std::make_unique<TextureComponent>("Resources/Textures/missile.bmp")
             );
-            bullet->addComponent(
+            playerBullet->addComponent(
                 std::make_unique<AnimationComponent>(2, 1, 2, 2));
 
+            playerBullet->addComponent(std::make_unique<PhysicsBodyComponent>()); 
+            playerBullet->addComponent(std::make_unique<BoxColliderComponent>()); 
 
-
-            bullet->addComponent(std::make_unique<PhysicsBodyComponent>()); 
-            bullet->addComponent(std::make_unique<BoxColliderComponent>()); 
-
-
-            bullet->addComponent(
+            playerBullet->addComponent(
                 std::make_unique<xc::BulletComponent>(800.0f) // speed (px/s)
             );
-            bullet->start();
-            bullet->onEnable();
-
+            playerBullet->start(); 
+            playerBullet->onEnable(); 
             SceneManager::getInstance() 
                 .getCurrentScene()  
-                ->add(std::move(bullet));
+                ->add(std::move(playerBullet));
 
+            //companionBullets
 
+            auto companions = SceneManager::getInstance().getCurrentScene()->findGameObjectsByTag("Companion"); 
+            if (companions.empty()) return; 
+
+            for (auto& companion : companions)
+            {
+                auto companionBullet = std::make_unique<GameObject>(); 
+
+                const b2Vec2 companionPos = companion->m_Transform.position; 
+
+                auto* companionTexture = companion->getComponent<TextureComponent>();
+                if (!companionTexture)
+                    return;
+
+                companionBullet->m_Transform.position = { 
+                    companionPos.x + 15,
+                    companionPos.y
+                };
+
+                companionBullet->addComponent(
+                    std::make_unique<TextureComponent>("Resources/Textures/missile.bmp")
+                );
+                companionBullet->addComponent(
+                    std::make_unique<AnimationComponent>(2, 1, 2, 2));
+
+                companionBullet->addComponent(std::make_unique<PhysicsBodyComponent>());
+                companionBullet->addComponent(std::make_unique<BoxColliderComponent>());
+
+                companionBullet->addComponent(
+                    std::make_unique<xc::BulletComponent>(800.0f) // speed (px/s)
+                );
+                companionBullet->start();
+                companionBullet->onEnable();
+                SceneManager::getInstance()
+                    .getCurrentScene()
+                    ->add(std::move(companionBullet));
+
+            }
         }
 
     private:

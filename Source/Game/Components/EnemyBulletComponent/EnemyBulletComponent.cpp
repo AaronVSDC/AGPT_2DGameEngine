@@ -29,17 +29,28 @@ namespace xc
 
         if (!other) return;
 
-        if (other->getTag() != "Player")
-            return;
+        if (other->getTag() == "Player")
+        {
 
-        // kill bullet
-        getOwner()->markForRemoval();
+            // kill bullet
+            getOwner()->markForRemoval(); 
 
-        // player explodes + dies
-        explodeAndDie(
-            other,
-            "Resources/Textures/explode64.bmp",
-            5, 2, 10, 16.0f
-        );
+            // player explodes + dies
+            explodeAndDie(
+                other,
+                "Resources/Textures/explode64.bmp",
+                5, 2, 10, 16.0f
+            );
+        }
+        else if (other->getTag() == "Companion")
+        {
+            getOwner()->markForRemoval(); 
+
+            explodeAndDie( 
+                other, 
+                "Resources/Textures/explode64.bmp",
+                5, 2, 10, 16.0f
+            );
+        }
     }
 }

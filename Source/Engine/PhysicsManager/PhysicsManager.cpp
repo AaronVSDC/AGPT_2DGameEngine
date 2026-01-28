@@ -17,49 +17,73 @@ namespace Papyrus
             b2DestroyWorld(m_worldId);
             m_worldId = {};
         }
-    } 
+    }
+
+    static inline GameObject* getGOFromShapeUserData(b2ShapeId shapeId)
+    {
+        if (!b2Shape_IsValid(shapeId))
+            return nullptr;
+        return static_cast<GameObject*>(b2Shape_GetUserData(shapeId));
+    }
+
+    static inline bool alive(GameObject* go)
+    {
+        return go && !go->isPendingRemoval();
+    }
 
     static void dispatchSensorEventsToComponents(b2WorldId worldId)
     {
         const b2SensorEvents sensorEvents = b2World_GetSensorEvents(worldId);
 
-        for (int beginIndex = 0; beginIndex < sensorEvents.beginCount; ++beginIndex)
+        // -----------------------------
+        // Begin touch (SENSOR)
+        // -----------------------------
+        for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            const b2SensorBeginTouchEvent& sensorBeginTouchEvent = sensorEvents.beginEvents[beginIndex];
+            const b2SensorBeginTouchEvent& e = sensorEvents.beginEvents[i];
 
-            GameObject* sensorGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorBeginTouchEvent.sensorShapeId));
+            // FIX: validity checks on BEGIN events too
+            if (!b2Shape_IsValid(e.sensorShapeId) || !b2Shape_IsValid(e.visitorShapeId))
+                continue;
 
-            GameObject* visitorGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorBeginTouchEvent.visitorShapeId));
+            GameObject* sensorGO  = getGOFromShapeUserData(e.sensorShapeId);
+            GameObject* visitorGO = getGOFromShapeUserData(e.visitorShapeId);
 
-            if (sensorGameObject && visitorGameObject)
+            if (!alive(sensorGO) || !alive(visitorGO))
+                continue;
+
+            // First notify
+            sensorGO->notifyTriggerEnter(visitorGO);
+
+            // FIX: re-check because callbacks may mark objects for removal
+            if (alive(sensorGO) && alive(visitorGO))
             {
-                sensorGameObject->notifyTriggerEnter(visitorGameObject);
-                visitorGameObject->notifyTriggerEnter(sensorGameObject);
+                visitorGO->notifyTriggerEnter(sensorGO);
             }
         }
 
-        for (int endIndex = 0; endIndex < sensorEvents.endCount; ++endIndex)
+        // -----------------------------
+        // End touch (SENSOR)
+        // -----------------------------
+        for (int i = 0; i < sensorEvents.endCount; ++i)
         {
-            const b2SensorEndTouchEvent& sensorEndTouchEvent = sensorEvents.endEvents[endIndex];
+            const b2SensorEndTouchEvent& e = sensorEvents.endEvents[i];
 
-            if (!b2Shape_IsValid(sensorEndTouchEvent.sensorShapeId) ||
-                !b2Shape_IsValid(sensorEndTouchEvent.visitorShapeId))
-            {
+            if (!b2Shape_IsValid(e.sensorShapeId) || !b2Shape_IsValid(e.visitorShapeId))
                 continue;
-            }
 
-            GameObject* sensorGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorEndTouchEvent.sensorShapeId));
+            GameObject* sensorGO  = getGOFromShapeUserData(e.sensorShapeId);
+            GameObject* visitorGO = getGOFromShapeUserData(e.visitorShapeId);
 
-            GameObject* visitorGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorEndTouchEvent.visitorShapeId));
+            if (!alive(sensorGO) || !alive(visitorGO))
+                continue;
 
-            if (sensorGameObject && visitorGameObject)
+            sensorGO->notifyTriggerExit(visitorGO);
+
+            // FIX: re-check after first notify
+            if (alive(sensorGO) && alive(visitorGO))
             {
-                sensorGameObject->notifyTriggerExit(visitorGameObject);
-                visitorGameObject->notifyTriggerExit(sensorGameObject);
+                visitorGO->notifyTriggerExit(sensorGO);
             }
         }
     }
@@ -68,47 +92,57 @@ namespace Papyrus
     {
         const b2ContactEvents contactEvents = b2World_GetContactEvents(worldId);
 
-        for (int beginIndex = 0; beginIndex < contactEvents.beginCount; ++beginIndex)
+        // -----------------------------
+        // Begin touch (CONTACT)
+        // -----------------------------
+        for (int i = 0; i < contactEvents.beginCount; ++i)
         {
-            const b2ContactBeginTouchEvent& contactBeginTouchEvent = contactEvents.beginEvents[beginIndex];
+            const b2ContactBeginTouchEvent& e = contactEvents.beginEvents[i];
 
-            GameObject* firstGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(contactBeginTouchEvent.shapeIdA));
+            // FIX: validity checks on BEGIN events too
+            if (!b2Shape_IsValid(e.shapeIdA) || !b2Shape_IsValid(e.shapeIdB))
+                continue;
 
-            GameObject* secondGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(contactBeginTouchEvent.shapeIdB));
+            GameObject* a = getGOFromShapeUserData(e.shapeIdA);
+            GameObject* b = getGOFromShapeUserData(e.shapeIdB);
 
-            if (firstGameObject && secondGameObject)
+            if (!alive(a) || !alive(b))
+                continue;
+
+            a->notifyCollisionEnter(b);
+
+            // FIX: re-check after first notify
+            if (alive(a) && alive(b))
             {
-                firstGameObject->notifyCollisionEnter(secondGameObject);
-                secondGameObject->notifyCollisionEnter(firstGameObject);
+                b->notifyCollisionEnter(a);
             }
         }
 
-        for (int endIndex = 0; endIndex < contactEvents.endCount; ++endIndex)
+        // -----------------------------
+        // End touch (CONTACT)
+        // -----------------------------
+        for (int i = 0; i < contactEvents.endCount; ++i)
         {
-            const b2ContactEndTouchEvent& contactEndTouchEvent = contactEvents.endEvents[endIndex];
+            const b2ContactEndTouchEvent& e = contactEvents.endEvents[i];
 
-            if (!b2Shape_IsValid(contactEndTouchEvent.shapeIdA) ||
-                !b2Shape_IsValid(contactEndTouchEvent.shapeIdB))
-            {
+            if (!b2Shape_IsValid(e.shapeIdA) || !b2Shape_IsValid(e.shapeIdB))
                 continue;
-            }
 
-            GameObject* firstGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(contactEndTouchEvent.shapeIdA));
+            GameObject* a = getGOFromShapeUserData(e.shapeIdA);
+            GameObject* b = getGOFromShapeUserData(e.shapeIdB);
 
-            GameObject* secondGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(contactEndTouchEvent.shapeIdB));
+            if (!alive(a) || !alive(b))
+                continue;
 
-            if (firstGameObject && secondGameObject)
+            a->notifyCollisionExit(b);
+
+            // FIX: re-check after first notify
+            if (alive(a) && alive(b))
             {
-                firstGameObject->notifyCollisionExit(secondGameObject);
-                secondGameObject->notifyCollisionExit(firstGameObject);
+                b->notifyCollisionExit(a);
             }
         }
     }
-
 
     void PhysicsManager::fixedUpdate(float fixedDeltaTime)
     {
@@ -118,7 +152,6 @@ namespace Papyrus
         b2World_Step(m_worldId, fixedDeltaTime, m_subStepCount);
 
         dispatchSensorEventsToComponents(m_worldId);
-
         dispatchContactEventsToComponents(m_worldId);
     }
 
@@ -126,25 +159,27 @@ namespace Papyrus
     {
         const b2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
 
-        for (int beginIndex = 0; beginIndex < sensorEvents.beginCount; ++beginIndex)
+        for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            const b2SensorBeginTouchEvent& sensorBeginTouchEvent = sensorEvents.beginEvents[beginIndex];
+            const b2SensorBeginTouchEvent& e = sensorEvents.beginEvents[i];
 
-            GameObject* firstGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorBeginTouchEvent.sensorShapeId));
-
-            GameObject* secondGameObject =
-                static_cast<GameObject*>(b2Shape_GetUserData(sensorBeginTouchEvent.visitorShapeId));
-
-            if (firstGameObject == nullptr || secondGameObject == nullptr)
+            // FIX: validity checks here too
+            if (!b2Shape_IsValid(e.sensorShapeId) || !b2Shape_IsValid(e.visitorShapeId))
                 continue;
 
-            OverlapBeginEvent overlapBeginEvent{}; 
-            overlapBeginEvent.firstGameObject = firstGameObject;
-            overlapBeginEvent.secondGameObject = secondGameObject;
+            GameObject* first  = getGOFromShapeUserData(e.sensorShapeId);
+            GameObject* second = getGOFromShapeUserData(e.visitorShapeId);
+
+            // FIX: skip dying objects; otherwise you store stale pointers
+            if (!alive(first) || !alive(second))
+                continue;
+
+            OverlapBeginEvent overlapBeginEvent{};
+            overlapBeginEvent.firstGameObject = first;
+            overlapBeginEvent.secondGameObject = second;
 
             m_overlapBeginEventsThisStep.push_back(overlapBeginEvent);
-        } 
+        }
     }
 
     std::vector<OverlapBeginEvent> PhysicsManager::consumeOverlapBeginEvents()

@@ -9,7 +9,6 @@ namespace Papyrus
 
 	Scene::Scene(const std::string& name) : m_Name(name) {}
 
-
 	Scene::~Scene() = default;
 
 	void Scene::add(std::unique_ptr<GameObject> object)
@@ -109,5 +108,29 @@ namespace Papyrus
 				return obj->isPendingRemoval();
 			});
 
+	}
+
+	GameObject* Scene::findGameObjectByTag(std::string_view tag) noexcept
+	{
+		for (auto& obj : m_Objects)
+		{
+			if (!obj) continue;
+			if (obj->getTag() == tag)
+				return obj.get();
+		}
+		return nullptr;
+	}
+	std::vector<GameObject*> Scene::findGameObjectsByTag(std::string_view tag) noexcept
+	{
+		std::vector<GameObject*> out;
+		out.reserve(4);
+
+		for (auto& obj : m_Objects)
+		{
+			if (!obj) continue;
+			if (obj->getTag() == tag)
+				out.push_back(obj.get());
+		}
+		return out;
 	}
 }

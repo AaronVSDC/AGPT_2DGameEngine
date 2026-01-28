@@ -27,6 +27,7 @@ namespace Papyrus
 		virtual void onTriggerExit(GameObject* otherGameObject) {}
 		virtual void onCollisionEnter(GameObject* otherGameObject) {}
 		virtual void onCollisionExit(GameObject* otherGameObject) {}
+		virtual void onOwnerMarkedForRemoval() {}
 
 		virtual GameObject* getOwner() const { return m_pOwner; }
 		void setOwner(GameObject* owner)

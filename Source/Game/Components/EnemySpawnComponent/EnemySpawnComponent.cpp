@@ -190,7 +190,7 @@ namespace xc
         const float spawnY = m_spawnYTopPixels - frameSize.y;
 
         auto enemy = std::make_unique<Papyrus::GameObject>();
-        enemy->setTag("Enemy");
+        enemy->setTag("Aestroid"); 
 
         enemy->m_Transform.position = { spawnX, spawnY };
 

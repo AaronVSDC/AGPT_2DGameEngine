@@ -6,7 +6,7 @@
 #include <iostream> 
 #include "BoxColliderComponent.h"
 #include "AsteroidSplittingComponent.h"
-
+#include "ExplosionUtility.h"
 
 namespace xc
 {
@@ -32,35 +32,56 @@ namespace xc
         if (!other) return;
         if (other->getTag() == "Indestructible")
         {
-            getOwner()->markForRemoval();
+            getOwner()->markForRemoval(); 
             return;
-        }
-        if (other->getTag() != "Enemy") return;
-
-        //Asteroid Split
-        auto* split = other->getComponent<AsteroidSplittingComponent>();
-        if (split)
+        } 
+        else if (other->getTag() == "Aestroid")
         {
-            split->split();
+            //Asteroid Split
+            auto* split = other->getComponent<AsteroidSplittingComponent>();
+            if (split)
+            {
+                split->split();
+            }
+
+            getOwner()->markForRemoval();
+
+            if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
+                enemyAnimation->m_Enabled = false;
+
+            auto* enemyTexture = other->getComponent<Papyrus::TextureComponent>();
+            if (!enemyTexture) return;
+
+            enemyTexture->setTexture("Resources/Textures/explode64.bmp");
+
+            auto explosionComponent = std::make_unique<ExplosionComponent>(5, 2, 10, 16.0f);
+            ExplosionComponent* explosionRawPointer = explosionComponent.get();
+
+            other->addComponent(std::move(explosionComponent));
+
+            explosionRawPointer->start();
+            explosionRawPointer->onEnable();
         }
+        else if (other->getTag() == "Enemy")
+        {
+            getOwner()->markForRemoval();
 
-        getOwner()->markForRemoval();
+            if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
+                enemyAnimation->m_Enabled = false;
 
-        if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
-            enemyAnimation->m_Enabled = false;
+            auto* enemyTexture = other->getComponent<Papyrus::TextureComponent>();
+            if (!enemyTexture) return;
 
-        auto* enemyTexture = other->getComponent<Papyrus::TextureComponent>();
-        if (!enemyTexture) return;
+            enemyTexture->setTexture("Resources/Textures/explode64.bmp");
 
-        enemyTexture->setTexture("Resources/Textures/explode64.bmp");
+            auto explosionComponent = std::make_unique<ExplosionComponent>(5, 2, 10, 16.0f);
+            ExplosionComponent* explosionRawPointer = explosionComponent.get();
 
-        auto explosionComponent = std::make_unique<ExplosionComponent>(5, 2, 10, 16.0f);
-        ExplosionComponent* explosionRawPointer = explosionComponent.get();
+            other->addComponent(std::move(explosionComponent));
 
-        other->addComponent(std::move(explosionComponent));
-
-        explosionRawPointer->start();
-        explosionRawPointer->onEnable();
+            explosionRawPointer->start();
+            explosionRawPointer->onEnable();
+        }
     }
 
 }

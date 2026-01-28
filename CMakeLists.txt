@@ -3,7 +3,7 @@ project(Papyrus LANGUAGES C CXX)
 
 include(FetchContent)
 
-# -----------------------------
+# ----------------------------- 
 # Dependencies
 # ----------------------------- 
 FetchContent_Declare(
@@ -112,16 +112,17 @@ add_custom_command(TARGET Game POST_BUILD
 # Copy Resources folder next to Game.exe
 set(RESOURCE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Resources")
 set(RESOURCE_BINARY_DIR "$<TARGET_FILE_DIR:Game>/Resources")
-
+ 
 add_custom_command(TARGET Game POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}"
+  COMMAND ${CMAKE_COMMAND} -E make_directory "${RESOURCE_BINARY_DIR}"  
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-          "${RESOURCE_SOURCE_DIR}"
-          "${RESOURCE_BINARY_DIR}"
+          "${RESOURCE_SOURCE_DIR}" 
+          "${RESOURCE_BINARY_DIR}" 
 )
-
+ 
 # C++ standard
 set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD 20)
 set_property(TARGET PapyrusEngine PROPERTY CXX_STANDARD_REQUIRED ON)
 set_property(TARGET Game         PROPERTY CXX_STANDARD 20)
 set_property(TARGET Game         PROPERTY CXX_STANDARD_REQUIRED ON)
+ 
