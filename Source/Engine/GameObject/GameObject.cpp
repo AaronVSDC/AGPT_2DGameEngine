@@ -100,26 +100,70 @@ namespace Papyrus
 	  
 	void GameObject::notifyTriggerEnter(GameObject* otherGameObject)
 	{
-		for (auto& component : m_Components)
-			if (component->m_Enabled) component->onTriggerEnter(otherGameObject);
+		std::vector<BaseComponent*> componentsSnapshot;
+		componentsSnapshot.reserve(m_Components.size());
+		for (const auto& component : m_Components)
+		{
+			componentsSnapshot.push_back(component.get());
+		}
+		for (auto* component : componentsSnapshot)
+		{
+			if (component && component->m_Enabled && !component->m_PendingRemove)
+			{
+				component->onTriggerEnter(otherGameObject);
+			}
+		}
 	}
 
 	void GameObject::notifyTriggerExit(GameObject* otherGameObject)
 	{
-		for (auto& component : m_Components)
-			if (component->m_Enabled) component->onTriggerExit(otherGameObject);
+		std::vector<BaseComponent*> componentsSnapshot;
+		componentsSnapshot.reserve(m_Components.size());
+		for (const auto& component : m_Components)
+		{
+			componentsSnapshot.push_back(component.get());
+		}
+		for (auto* component : componentsSnapshot)
+		{
+			if (component && component->m_Enabled && !component->m_PendingRemove)
+			{
+				component->onTriggerExit(otherGameObject);
+			}
+		}
 	}
 
 	void GameObject::notifyCollisionEnter(GameObject* otherGameObject)
 	{
-		for (auto& component : m_Components)
-			if (component->m_Enabled) component->onCollisionEnter(otherGameObject);
+		std::vector<BaseComponent*> componentsSnapshot;
+		componentsSnapshot.reserve(m_Components.size());
+		for (const auto& component : m_Components)
+		{
+			componentsSnapshot.push_back(component.get());
+		}
+		for (auto* component : componentsSnapshot)
+		{
+			if (component && component->m_Enabled && !component->m_PendingRemove)
+			{
+				component->onCollisionEnter(otherGameObject);
+			}
+		}
 	}
 
 	void GameObject::notifyCollisionExit(GameObject* otherGameObject)
 	{
-		for (auto& component : m_Components)
-			if (component->m_Enabled) component->onCollisionExit(otherGameObject);
+		std::vector<BaseComponent*> componentsSnapshot;
+		componentsSnapshot.reserve(m_Components.size());
+		for (const auto& component : m_Components)
+		{
+			componentsSnapshot.push_back(component.get());
+		}
+		for (auto* component : componentsSnapshot)
+		{
+			if (component && component->m_Enabled && !component->m_PendingRemove)
+			{
+				component->onCollisionExit(otherGameObject);
+			}
+		}
 	}
 
 	void GameObject::markForRemoval()
