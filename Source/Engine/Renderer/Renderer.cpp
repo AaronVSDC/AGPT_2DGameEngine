@@ -112,7 +112,6 @@ namespace Papyrus
 
     void Renderer::init()
     {
-        // State suitable for 2D sprites
         glDisable(GL_DEPTH_TEST);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -125,11 +124,9 @@ namespace Papyrus
         m_uUVOffset = glGetUniformLocation(m_Program, "uUVOffset");
         m_uUVScale = glGetUniformLocation(m_Program, "uUVScale");
 
-        // Always sample from texture unit 0
         glUniform1i(m_uTex, 0);
 
-        // A unit quad (0..1 in local space). Two triangles.
-        // UVs also 0..1; we transform UVs in shader via offset/scale.
+
         const float verts[] = {
             // pos      // uv
             0.f, 0.f,   0.f, 0.f,
@@ -160,7 +157,6 @@ namespace Papyrus
 
     void Renderer::render() const
     {
-        // Ensure viewport matches current window size
         glViewport(0, 0, Window::getInstance().getWidth(), Window::getInstance().getHeight());
 
         const auto& c = m_ClearColor;
@@ -189,29 +185,23 @@ namespace Papyrus
         const SDL_FPoint* pivot
     ) const
     {
-        // ---- compute MVP ----
         glm::mat4 P = projection();
         glm::mat4 M(1.0f);
 
-        // Move to destination position
         M = glm::translate(M, glm::vec3(dstPixels.x, dstPixels.y, 0.0f));
 
-        // Pivot is specified in destination-local pixels (SDL style)
         glm::vec2 piv = pivot
             ? glm::vec2(pivot->x, pivot->y)
             : glm::vec2(dstPixels.w * 0.5f, dstPixels.h * 0.5f);
 
-        // Translate to pivot, rotate, translate back
         M = glm::translate(M, glm::vec3(piv, 0.0f));
         M = glm::rotate(M, glm::radians(rotationDegrees), glm::vec3(0, 0, 1));
         M = glm::translate(M, glm::vec3(-piv, 0.0f));
 
-        // Scale unit quad to destination size
         M = glm::scale(M, glm::vec3(dstPixels.w, dstPixels.h, 1.0f));
 
         glm::mat4 MVP = P * M;
 
-        // ---- compute UV transform from source rect ----
         const float Tw = (float)tex.width();
         const float Th = (float)tex.height();
 

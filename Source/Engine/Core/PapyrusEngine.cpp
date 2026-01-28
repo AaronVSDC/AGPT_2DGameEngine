@@ -48,7 +48,7 @@ namespace Papyrus
 			const float deltaTime = std::chrono::duration<float>(currentTime - lastTime).count();
 			lastTime = currentTime;
 			lag += deltaTime;
-
+			 
 			doContinue = input.processInput();
 
 			while (lag >= fixedTimeStep)
@@ -64,8 +64,6 @@ namespace Papyrus
 			std::this_thread::sleep_for(sleepTime);
 		}
 		sceneManager.onDisable();
-
-
 	}
 
 	

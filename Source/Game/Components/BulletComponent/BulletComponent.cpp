@@ -79,7 +79,7 @@ namespace xc
             getOwner()->markForRemoval();
 
             if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
-                enemyAnimation->m_Enabled = false;
+                enemyAnimation->m_Enabled = false; 
 
             auto* enemyTexture = other->getComponent<Papyrus::TextureComponent>();
             if (!enemyTexture) return;
