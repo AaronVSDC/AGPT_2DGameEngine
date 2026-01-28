@@ -16,7 +16,7 @@ namespace xc
 			);
 			return; 
 		}
-		if (other->getTag() == "Enemy")
+		else if (other->getTag() == "Enemy")
 		{
 			explodeAndDie(
 				getOwner(),

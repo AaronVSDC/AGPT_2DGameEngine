@@ -42,6 +42,10 @@ namespace Papyrus
 
 	void Scene::update(float deltaTime)
 	{
+		if (m_IsPaused)
+		{
+			return;
+		}
 		for (auto& object : m_Objects)
 		{
 			if (object->getIsActive())
@@ -55,6 +59,10 @@ namespace Papyrus
 
 	void Scene::fixedUpdate(float fixedTimeStep)
 	{
+		if (m_IsPaused)
+		{
+			return;
+		}
 		for (auto& object : m_Objects)
 		{
 			if (object->getIsActive())

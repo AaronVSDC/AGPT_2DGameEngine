@@ -33,9 +33,10 @@ namespace Papyrus
 		bool getIsActive() const { return m_IsActive; }
 		void setIsActive(bool newValue) { m_IsActive = newValue; }
 		GameObject* findGameObjectByTag(std::string_view tag) noexcept; 
-		std::vector<GameObject*> findGameObjectsByTag(std::string_view tag) noexcept; 
+		std::vector<GameObject*> findGameObjectsByTag(std::string_view tag) noexcept;
+		void setIsPaused(bool newVal) { m_IsPaused = newVal;  }
 
-	private: 
+	private:  
 		explicit Scene(const std::string& name);
 
 		void flushPendingAdds();
@@ -50,6 +51,8 @@ namespace Papyrus
 		static unsigned int m_idCounter;
 
 		bool m_IsActive = true;
+
+		bool m_IsPaused = false; 
 	};
 
 }

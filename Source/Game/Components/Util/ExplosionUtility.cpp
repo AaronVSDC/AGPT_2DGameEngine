@@ -8,6 +8,7 @@
 #include "ExplosionComponent.h"
 #include "BoxColliderComponent.h"
 #include <PhysicsBodyComponent.h>
+#include "SceneManager.h"
 
 namespace xc
 {
@@ -57,5 +58,6 @@ namespace xc
         // Start only the new component (don’t call target->start() again)
         explosionRawPointer->start();
         explosionRawPointer->onEnable();
+
     }
 }

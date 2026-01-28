@@ -32,11 +32,17 @@ namespace xc
         if (!other) return;
         if (other->getTag() == "Indestructible")
         {
-            getOwner()->markForRemoval(); 
+            getOwner()->markForRemoval();
             return;
-        } 
+        }
         else if (other->getTag() == "Aestroid")
         {
+            if (other->getComponent<ExplosionComponent>())
+            {
+                getOwner()->markForRemoval();
+                return;
+            }
+
             //Asteroid Split
             auto* split = other->getComponent<AsteroidSplittingComponent>();
             if (split)
@@ -64,6 +70,12 @@ namespace xc
         }
         else if (other->getTag() == "Enemy")
         {
+            if (other->getComponent<ExplosionComponent>())
+            {
+                getOwner()->markForRemoval();
+                return;
+            }
+
             getOwner()->markForRemoval();
 
             if (auto* enemyAnimation = other->getComponent<Papyrus::AnimationComponent>())
