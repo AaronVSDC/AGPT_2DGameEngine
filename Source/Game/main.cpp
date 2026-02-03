@@ -38,8 +38,34 @@ void load()
 	mainLevel->add(std::move(parallax)); 
 
 	//-----------------------------------------------------------------------------------------------------------
+	//PLAYER HUD HP 
+	//-----------------------------------------------------------------------------------------------------------
+	std::vector<Papyrus::GameObject*> lifeIcons;
+
+	const float startX = 80.f;
+	const float startY = -50.0f;
+	const float spacing = 70.f;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		auto life = std::make_unique<Papyrus::GameObject>();
+		life->addComponent(
+			std::make_unique<Papyrus::TextureComponent>(
+				"Resources/Textures/HealthIcon.bmp"
+			)
+		);
+
+		life->m_Transform.scale = { 0.4f, 0.4f };
+		life->m_Transform.position = { startX, startY + i * spacing };
+		life->m_Transform.rotation = -90.f;
+
+		lifeIcons.push_back(life.get());
+		mainLevel->add(std::move(life));
+	}
+	//-----------------------------------------------------------------------------------------------------------
 	//PLAYER
 	//-----------------------------------------------------------------------------------------------------------
+	
 	auto playerShip = std::make_unique< Papyrus::GameObject>(); 
 	playerShip->addComponent( std::make_unique<Papyrus::TextureComponent>("Resources/Textures/Ship1.bmp ")); 
 	playerShip->addComponent( std::make_unique<Papyrus::PlayerAnimationComponent>( 7,12.0f));
@@ -47,9 +73,16 @@ void load()
 	playerShip->addComponent(std::make_unique<Papyrus::PhysicsBodyComponent>());
 	playerShip->addComponent(std::make_unique<Papyrus::BoxColliderComponent>());
 	playerShip->addComponent(std::make_unique<xc::DecideCollisionComponent>()); 
-	playerShip->addComponent(std::make_unique<xc::HealthComponent>()); 
-	playerShip->addComponent(std::make_unique<xc::HealthUIComponent>()); 
+	playerShip->addComponent(std::make_unique<xc::HealthComponent>(3)); 
+
+	auto healthUI = std::make_unique<xc::HealthUIComponent>();
+	healthUI->setLifeIcons(lifeIcons);
+	playerShip->addComponent(std::move(healthUI));
+
 	playerShip->setTag("Player");
+	playerShip->m_Transform.position = { 280.0f, 450.0f };
+
+
 
 	//----------------------------------------------------------------------------------------------------------
 	//COMPANION
@@ -126,6 +159,7 @@ void load()
 	score->addComponent(std::unique_ptr<Papyrus::BaseComponent>(comp)); 
 	comp->setHighScoreTextObject(highScore.get());
 	comp->setSaveFile("highscore.txt");  
+
 
 
 	//-------------------------------------------------------------------------------------------------------

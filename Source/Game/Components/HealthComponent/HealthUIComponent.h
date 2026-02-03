@@ -2,27 +2,27 @@
 #define HEALTH_UI_COMPONENT
 
 #include "BaseComponent.h"
-#include <memory>
-#include <string>
+#include <vector>
 
-namespace Papyrus { class Scene; class GameObject; }
+namespace Papyrus { class GameObject; }
 
 namespace xc
 {
-	class HealthComponent; 
+	class HealthComponent;
+
 	class HealthUIComponent final : public Papyrus::BaseComponent
 	{
 	public:
-		
-		void render() const override; 
+		void setLifeIcons(const std::vector<Papyrus::GameObject*>& lives)
+		{
+			m_Lives = lives;
+		}
+
 		void update(float dt) override;
-		void start() override; 
+
 	private:
-		std::unique_ptr<Papyrus::GameObject> m_Life1;
-		std::unique_ptr<Papyrus::GameObject> m_Life2;
-		HealthComponent* m_HealthComponent; 
-
-
+		HealthComponent* m_HealthComponent = nullptr;
+		std::vector<Papyrus::GameObject*> m_Lives;
 	};
 }
 

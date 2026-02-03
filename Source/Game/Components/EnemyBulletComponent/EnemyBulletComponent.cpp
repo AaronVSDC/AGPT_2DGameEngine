@@ -1,4 +1,6 @@
 #include "EnemyBulletComponent.h"
+#include "HealthUIComponent.h"
+#include "HealthComponent.h"
 
 #include "GameObject.h"
 #include "ExplosionUtility.h"
@@ -35,12 +37,24 @@ namespace xc
             // kill bullet
             getOwner()->markForRemoval(); 
 
-            // player explodes + dies
-            explodeAndDie(
-                other,
-                "Resources/Textures/explode64.bmp",
-                5, 2, 10, 16.0f
-            );
+            auto* health = other->getComponent<HealthComponent>();
+            if (health)
+            {
+                health->damage(1); // remove 1 HP
+
+                // Remove bullet
+                getOwner()->markForRemoval();
+
+                // If player is dead, explode
+                if (health->isDead())
+                {
+                    explodeAndDie(
+                        other,
+                        "Resources/Textures/explode64.bmp",
+                        5, 2, 10, 16.0f
+                    );
+                }
+            }
         }
         else if (other->getTag() == "Companion")
         {

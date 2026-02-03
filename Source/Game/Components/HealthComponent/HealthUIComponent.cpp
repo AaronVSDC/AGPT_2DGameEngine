@@ -1,26 +1,23 @@
 #include "HealthUIComponent.h"
-#include "GameObject.h"
 #include "HealthComponent.h"
-#include "TextureComponent.h"
-#include "SceneManager.h"
+#include "GameObject.h"
 
 namespace xc
 {
-
-	void HealthUIComponent::render() const
+	void HealthUIComponent::update(float)
 	{
+		if (!m_HealthComponent)
+			m_HealthComponent = getOwner()->getComponent<HealthComponent>();
+
+		if (!m_HealthComponent)
+			return;
+
+		const int hp = m_HealthComponent->getHealth();
+
+		for (int i = 0; i < (int)m_Lives.size(); ++i)
+		{
+			if (m_Lives[i])
+				m_Lives[i]->setActive(i < hp);
+		}
 	}
-
-	void HealthUIComponent::update(float dt)
-	{
-	}
-
-	void HealthUIComponent::start()
-	{
-
-		m_HealthComponent = getOwner()->getComponent<HealthComponent>(); 
-
-
-	}
-
 }
