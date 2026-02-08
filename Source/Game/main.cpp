@@ -90,12 +90,13 @@ void load()
 	auto healthBar = std::make_unique<Papyrus::GameObject>();
 	healthBar->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/green_bar.bmp", false));
 	healthBar->addComponent(std::make_unique<xc::HealthBarComponent>());  
-	healthBar->m_Transform.position = { 100.f, 100.0f };
+	healthBar->m_Transform.position = { 540.f, 550.0f };
 	healthBar->m_Transform.rotation = 180;  
 
 	//----------------------------------------------------------------------------------------------------------
 	//COMPANION
 	//----------------------------------------------------------------------------------------------------------
+
 	auto companion = std::make_unique<Papyrus::GameObject>(); 
 	companion->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/clone.bmp"));  
 	companion->addComponent(std::make_unique<Papyrus::AnimationComponent>(4, 4, 4*4, 14.f));  
