@@ -3,6 +3,7 @@
 #include <UpdateUIScoreComponent.h>
 #include <HighScoreComponent.h>
 #include <HealthComponent.h>
+#include <HealthBarComponent.h>
 #include <HealthUIComponent.h>
 
 void load()
@@ -82,6 +83,10 @@ void load()
 	playerShip->setTag("Player");
 	playerShip->m_Transform.position = { 280.0f, 450.0f };
 	 
+	//-----------------------------------------------------------------------------------------------------------
+	//HEALTH BAR
+	//-----------------------------------------------------------------------------------------------------------
+
 
 
 	//----------------------------------------------------------------------------------------------------------
