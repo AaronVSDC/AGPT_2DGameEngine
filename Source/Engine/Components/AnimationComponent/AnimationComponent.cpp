@@ -38,6 +38,8 @@ namespace Papyrus
 
     void AnimationComponent::update(float deltaTime)
     {
+
+
         if (!m_textureComponent)
             return;
 

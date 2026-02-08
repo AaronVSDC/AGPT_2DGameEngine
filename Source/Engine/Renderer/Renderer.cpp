@@ -26,19 +26,25 @@ namespace Papyrus
     )GLSL";
 
     static const char* kFS = R"GLSL(
-    #version 330 core
-    in vec2 vUV;
-    out vec4 FragColor;
+#version 330 core
+in vec2 vUV;
+out vec4 FragColor;
 
-    uniform sampler2D uTex;
-    uniform vec2 uUVOffset;
-    uniform vec2 uUVScale;
+uniform sampler2D uTex;
+uniform vec2 uUVOffset;
+uniform vec2 uUVScale;
 
-    void main()
-    {
-        vec2 uv = vUV * uUVScale + uUVOffset;
-        FragColor = texture(uTex, uv);
-    }
+void main()
+{
+    vec2 uv = vUV * uUVScale + uUVOffset;
+    vec4 tex = texture(uTex, uv);
+
+    // exact magenta key
+    if (tex.rgb == vec3(1.0, 0.0, 1.0))
+        discard;
+
+    FragColor = tex;
+}
     )GLSL";
 
     Renderer::Renderer()
