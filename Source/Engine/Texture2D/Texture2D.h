@@ -24,6 +24,9 @@ namespace Papyrus
         int width() const { return m_Width; }
         int height() const { return m_Height; }
 
+        void setWidht(int value) { m_Width = value;  }
+        void setHeight(int value) { m_Height = value;  }
+
     private:
         GLuint m_TextureId = 0;
         int m_Width = 0;
