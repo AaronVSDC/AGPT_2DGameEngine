@@ -8,14 +8,16 @@
 
 namespace Papyrus
 {
-	TextureComponent::TextureComponent(const std::string& fileName)
-		:m_FileName(fileName) 
+	TextureComponent::TextureComponent(const std::string& fileName, bool renderTexture)
+		:m_FileName(fileName), m_RenderTexture{renderTexture}
 	{
 		m_pTexture = Papyrus::ResourceManager::getInstance().loadTexture(m_FileName);
 	}
 
 	void TextureComponent::render() const
 	{
+		if (!m_RenderTexture)
+			return; 
 		if (getOwner()->hasComponent<Papyrus::AnimationComponent>())
 			return;
 		if (getOwner()->hasComponent<PlayerAnimationComponent>()) 

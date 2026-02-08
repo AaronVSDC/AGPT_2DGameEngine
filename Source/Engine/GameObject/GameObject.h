@@ -36,6 +36,7 @@ namespace Papyrus
 		void notifyCollisionExit(GameObject* otherGameObject);
 
 		Transform getTransform() const { return m_Transform; }
+		Transform& getTransform() { return m_Transform;  } 
 		bool getIsActive() const { return m_IsActive; }
 
 		//component stuff

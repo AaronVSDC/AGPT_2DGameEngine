@@ -11,8 +11,8 @@ namespace Papyrus
 	class PAPYRUS_API TextureComponent final : public Papyrus::BaseComponent
 	{
 	public:
-		TextureComponent(const std::string& fileName);
-		TextureComponent(const TextureComponent&) = delete;
+		TextureComponent(const std::string& fileName, bool renderTexture = true);
+		TextureComponent(const TextureComponent&) = delete; 
 		TextureComponent& operator=(const TextureComponent&) = delete;
 		TextureComponent(TextureComponent&&) = delete;
 		TextureComponent& operator=(TextureComponent&&) = delete;
@@ -27,6 +27,7 @@ namespace Papyrus
 		 
 		Papyrus::Texture2D* m_pTexture;
 		std::string m_FileName;
+		bool m_RenderTexture; 
 
 	};
 }
