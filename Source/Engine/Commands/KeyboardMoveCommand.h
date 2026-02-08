@@ -16,25 +16,21 @@
 
 namespace Papyrus
 {
-    // This file was mapped for a -90° rotated world.
-    // For a +90° rotated world (i.e. 180° difference vs -90°), all cardinal directions invert,
-    // and the analog rotation changes from +90° to -90°.
-
+ 
     class MoveUpCommand final : public Command
     {
     public:
         explicit MoveUpCommand(GameObject* gameObject)
             : m_gameObject(gameObject) {}
 
-        void execute() override
+        void execute() override  
         {
             if (!m_gameObject) return;
 
             auto* moveComponent = m_gameObject->getComponent<MoveComponent>();
             if (!moveComponent) return;
 
-            // Up now points the opposite way on the rotated axis
-            moveComponent->addAcceleration({ -1.0f, 0.0f });
+            moveComponent->addAcceleration({ -1.0f, 0.0f }); 
         }
 
     private:

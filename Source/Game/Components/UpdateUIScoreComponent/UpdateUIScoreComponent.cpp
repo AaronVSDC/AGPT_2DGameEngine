@@ -28,7 +28,6 @@ void xc::UpdateUIScoreComponent::update(float /*dt*/)
 	auto* scoreText = owner->getComponent<Papyrus::TextComponent>();
 	if (!scoreText) return;
 
-	// Load once
 	if (!m_Loaded)
 	{
 		m_HighScore = loadHighScore();
@@ -42,13 +41,10 @@ void xc::UpdateUIScoreComponent::update(float /*dt*/)
 		}
 	}
 
-	// Update score (replace with your real scoring later)
 	m_ScoreCounter += 1;
 
-	// Update score UI
 	scoreText->setText(std::to_string(m_ScoreCounter));
 
-	// High score update + save
 	if (m_ScoreCounter > m_HighScore)
 	{
 		m_HighScore = m_ScoreCounter;
