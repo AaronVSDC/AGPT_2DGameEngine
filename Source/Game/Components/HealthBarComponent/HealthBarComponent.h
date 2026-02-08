@@ -3,7 +3,7 @@
 
 #include "BaseComponent.h"
 
-namespace Papyrus { class GameObject; }
+namespace Papyrus { class TextureComponent; }
 
 namespace xc
 {
@@ -14,13 +14,15 @@ namespace xc
     public:
         HealthBarComponent() = default;
 
-        void setBar(Papyrus::GameObject* bar) { m_Bar = bar; }
-
         void update(float dt) override;
     private:
         HealthComponent* m_HealthComponent = nullptr;
-        Papyrus::GameObject* m_Bar = nullptr; // texture
         float m_OriginalWidth = 0.0f;
+
+        Papyrus::TextureComponent* m_TextureComponent = nullptr;
+        
+
+        
     };
 }
 

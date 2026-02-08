@@ -87,7 +87,10 @@ void load()
 	//HEALTH BAR
 	//-----------------------------------------------------------------------------------------------------------
 
-
+	auto healthBar = std::make_unique<Papyrus::GameObject>();
+	healthBar->addComponent(std::make_unique<Papyrus::TextureComponent>("Resources/Textures/green_bar.bmp"));
+	healthBar->m_Transform.position = { 450.0f, 450.0f };
+	healthBar->m_Transform.rotation = -90.f;
 
 	//----------------------------------------------------------------------------------------------------------
 	//COMPANION
@@ -198,6 +201,7 @@ void load()
 	mainLevel->add(std::move(score));
 	mainLevel->add(std::move(highScoreText));
 	mainLevel->add(std::move(highScore)); 
+	mainLevel->add(std::move(healthBar));
 
 
 }

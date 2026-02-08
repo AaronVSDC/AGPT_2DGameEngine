@@ -4,6 +4,7 @@
 #include "TextureComponent.h"
 namespace xc
 {
+
     void HealthBarComponent::update(float)
     {
         if (!m_HealthComponent)
@@ -11,8 +12,9 @@ namespace xc
             m_HealthComponent = getOwner()->getComponent<HealthComponent>();
         }
 
-        if (!m_HealthComponent || !m_Bar)
-            return;
+            m_TextureComponent = getOwner()->getComponent<Papyrus::TextureComponent>();
+
+            m_TextureComponent ->getTexture()->setWidth()
 
     }
 }
